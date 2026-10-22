@@ -44,7 +44,7 @@ The Volume Intelligence Engine compares matching symbol, IST minute and interval
 
 ## Strategies, scenarios and admission
 
-Technical functions implement SMA, seeded EMA, Wilder RSI/ATR/ADX, MACD, Bollinger bands, support/resistance, momentum and candle VWAP. The registry contains versioned opening-participation research and an EMA/price-structure baseline without the volume gate. Regime restrictions reject unsupported/high-volatility/news-driven contexts rather than forcing a direction.
+Technical functions implement SMA, seeded EMA, Wilder RSI/ATR/ADX, MACD, Bollinger bands, support/resistance, momentum and candle VWAP. The registry preserves opening-participation research and an EMA baseline, and adds ten versioned strategies with explicit eligibility status, timestamp and reasons. See `docs/ADVANCED_RESEARCH.md` for each strategy and its inputs. Regime restrictions reject unsupported/high-volatility/news-driven contexts rather than forcing a direction.
 
 At 09:20, a mature directional opening candle plus independent EMA and volume confirmation may qualify. Later evaluations require a completed close beyond the opening range. Underlying invalidation is a structural opening-range boundary. Targets are measured-range hypotheses. Premium mapping uses local option delta/gamma and theta stress; excessive underlying moves, missing Greeks and invalid tick-rounded levels are rejected. No technique is assigned a claimed optimal weight or accuracy.
 
@@ -75,7 +75,7 @@ Mongoose uses explicit strict collection schemas. Analytical nested snapshots us
 
 Mongo transactions use snapshot reads and majority writes. A shared account revision write causes conflicting admissions/fills to retry serially. Admission assigns slots inside the transaction; unique indexes provide a second barrier. A signal and initial lifecycle event commit with its report. Paper entry/exit, account cash and execution record commit together. Signals cannot be updated or deleted through the store or Mongoose mutation middleware; later outcomes are separate events.
 
-Option snapshots remain ordinary collections because this implementation prioritizes deduplication and simple indexed replay. A future time-series migration must preserve receipt-time querying and original decision snapshots. Original signals, executions and analysis runs do not expire. Quote snapshots expire after `SNAPSHOT_RETENTION_DAYS`; extending retention and backups is necessary for longer replay windows.
+Option snapshots remain ordinary collections because this implementation prioritizes deduplication and simple indexed replay. A future time-series migration must preserve receipt-time querying and original decision snapshots. Original signals, executions and analysis runs do not expire. Detailed selected-minute snapshots become eligible for expiry only after five-minute compaction. Candle source expiry likewise requires verified aggregates and baselines. Storage health throttles optional snapshots while preserving essential audit history. Longer executable replay still requires sufficient point-in-time quote coverage.
 
 ## Scheduling and recovery
 
@@ -95,6 +95,10 @@ Replay calls the same strategy and risk functions. Decisions see only completed,
 
 ## Optional models and known boundaries
 
-FinBERT is a configurable HTTP sentiment interface; an absent/failed service leaves sentiment null. `ValidatedModelService` is an optional inference contract that checks stored chronological-validation/calibration flags and returns null on any failure. No trained LightGBM model or validated probability model is supplied, and the shipped strategy does not call it to invent probabilities. Training, labels, walk-forward experiments and model approval require an adequate real historical dataset first.
+A local Python FinBERT implementation is supplied behind the configurable HTTP sentiment interface; an absent/failed service leaves sentiment null. `ValidatedModelService` is an optional inference contract that checks stored chronological-validation/calibration flags and returns null on any failure. No trained LightGBM model or validated probability model is supplied, and the shipped strategy does not call it to invent probabilities. Candidate-time option outcome labeling and offline LightGBM training, purged walk-forward tuning, separate calibration, unseen metrics, ablations and Parquet exports are implemented. Training still requires adequate real historical observations; approval is never automatic.
 
 The initial system does not claim validated sector-relative strength, licensed global macro coverage, automatic complete earnings-calendar coverage, a portfolio backtest optimizer, exercise/settlement simulation or broker-certified live throughput. These limitations are surfaced in `IMPLEMENTATION_STATUS.md` and research outputs where applicable.
+
+## Additional persistence and workers
+
+`option_aggregates` stores sampled five-minute observations; `market_features` stores the latest compact volume feature set. `strategy_decisions`, `news_briefings`, `research_outcomes` and `validation_reports` preserve immutable research evidence. `storage_health` retains one updated measurement per day and `retention_checkpoints` tracks verified session derivation. News/model workers run asynchronously outside WebSocket callbacks, and graceful shutdown waits for active work before closing MongoDB. Raw ticks are never inserted. Detail on every retention category and its failure behavior is in [ADVANCED_RESEARCH.md](docs/ADVANCED_RESEARCH.md).

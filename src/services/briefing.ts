@@ -78,7 +78,7 @@ export function validateExtraction(raw: unknown, sources: NewsItem[]): NewsBrief
     return {
       ...e,
       instrumentKeys: [...new Set(e.sourceIds.flatMap((id) => map.get(id)!.instrumentKeys))],
-      verification: e.sourceIds.some((id) => map.get(id)!.official)
+      verification: e.evidence.some((x) => x.quote === e.summary && map.get(x.sourceId)!.official)
         ? 'OFFICIAL_SOURCE'
         : 'ATTRIBUTED_UNVERIFIED',
     };
@@ -101,10 +101,13 @@ export async function createBriefing(
     cutoff,
     createdAt,
     version: 'grounded-briefing:1.0.0',
+    method: c.AI_ENABLED && c.QWEN_ENABLED ? 'GROUNDED_MODEL' : 'SOURCE_DIGEST',
+    aiStatus: c.AI_ENABLED ? 'ENABLED' : 'DISABLED',
     status: sources.length ? 'DEGRADED' : 'UNAVAILABLE',
     model: null,
     sourceIds: sources.map((n) => n.id),
-    sources: sources.map(({ id, headline, summary, url, publishedAt, receivedAt, official }) => ({
+    sources: sources.map(({ id, headline, summary, url, publishedAt, receivedAt, official, instrumentKeys }) => ({
+      instrumentKeys,
       id,
       headline,
       summary: summary ?? '',
@@ -119,6 +122,11 @@ export async function createBriefing(
   };
   if (!sources.length) {
     result.failures.push('NO_TIMESTAMP_VALID_SOURCES');
+    return result;
+  }
+  if (!c.AI_ENABLED || !c.QWEN_ENABLED) {
+    result.version = 'source-digest:1.0.0';
+    result.status = 'READY';
     return result;
   }
   if (!c.OLLAMA_BASE_URL) {
@@ -163,7 +171,7 @@ export async function createBriefing(
   } catch {
     result.failures.push('OLLAMA_UNAVAILABLE_OR_UNGROUNDED_OUTPUT');
   }
-  if (sources.some((n) => n.sentiment === null)) {
+  if (c.FINBERT_ENABLED && sources.some((n) => n.sentiment === null)) {
     result.failures.push('FINBERT_SENTIMENT_PARTIALLY_UNAVAILABLE');
     if (result.status === 'READY') result.status = 'DEGRADED';
   }

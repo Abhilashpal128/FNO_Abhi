@@ -101,7 +101,9 @@ export class NewsService {
       n.instrumentKeys = [...new Set(n.instrumentKeys)];
       n.clusterId = clusters.find((c) => c.sourceIds.includes(n.id))?.id;
       const sentimentUrl = this.config.FINBERT_SERVICE_URL || this.config.FINBERT_URL;
-      if (sentimentUrl) {
+      n.sentiment = null;
+      n.sentimentMethod = null;
+      if (this.config.AI_ENABLED && this.config.FINBERT_ENABLED && sentimentUrl) {
         try {
           const response = await this.transport(sentimentUrl, {
             method: 'POST',
@@ -127,9 +129,10 @@ export class NewsService {
     }
     await this.store.put('system_health', {
       id: 'news-models',
-      status: selected.some((n) => n.sentiment !== null) ? 'OK' : 'DEGRADED',
+      status: !this.config.AI_ENABLED || (!this.config.FINBERT_ENABLED && !this.config.QWEN_ENABLED)
+        ? 'DISABLED' : selected.some((n) => n.sentiment !== null) ? 'OK' : 'DEGRADED',
       checkedAt: Date.now(),
-      details: [
+      details: !this.config.AI_ENABLED ? ['AI_DISABLED; source news collection remains active'] : [
         ...(!sentimentUrlConfigured(this.config)
           ? ['FINBERT_NOT_CONFIGURED']
           : selected.some((n) => n.sentiment === null)
@@ -187,7 +190,7 @@ export class NewsService {
       });
   }
   start(keys: () => string[]) {
-    if (this.config.DATA_MODE !== 'live') return;
+    if (this.config.DATA_MODE !== 'live' || this.timer) return;
     const tick = () => {
       const now = Date.now(),
         day = dayKey(now),
@@ -202,19 +205,21 @@ export class NewsService {
       }
       // Leave the configured inference timeout plus one worker tick before the 09:00 deadline.
       // A late startup still records actual availability rather than backdating the report.
-      if (now >= cutoff - this.config.NEWS_MODEL_TIMEOUT_MS - 30000) this.scheduleBriefing(cutoff);
+      const lead = this.config.AI_ENABLED && this.config.QWEN_ENABLED ? this.config.NEWS_MODEL_TIMEOUT_MS + 30000 : 0;
+      if (now >= cutoff - lead) this.scheduleBriefing(cutoff);
     };
     this.timer = setInterval(tick, 30000);
     tick();
   }
   async stop() {
     if (this.timer) clearInterval(this.timer);
+    this.timer = null;
     await this.collecting;
     await this.briefing;
   }
   async loadEvents(now = Date.now()): Promise<void> {
     this.calendarReady = false;
-    if (!this.config.EVENT_CALENDAR_PATH) return;
+    if (!this.config.EVENT_CALENDAR_PATH && !this.config.EVENT_CALENDAR_JSON) return;
     const schema = z.object({
       validFrom: z.iso.date(),
       validUntil: z.iso.date(),
@@ -231,7 +236,7 @@ export class NewsService {
         }),
       ),
     });
-    const file = schema.parse(JSON.parse(await readFile(this.config.EVENT_CALENDAR_PATH, 'utf8')));
+    const file = schema.parse(JSON.parse(this.config.EVENT_CALENDAR_JSON || await readFile(this.config.EVENT_CALENDAR_PATH, 'utf8')));
     const today = dayKey(now);
     if (file.validFrom > today || file.validUntil < today) return;
     const records: MarketEvent[] = [];
@@ -270,7 +275,8 @@ export class NewsService {
         { sort: { publishedAt: -1 }, limit: 500 },
       ),
       asOf,
-    ).filter((n) => n.instrumentKeys.includes(key) || n.classification === 'POLICY');
+    ).filter((n) => n.instrumentKeys.includes(key) || n.classification === 'POLICY')
+      .map((n) => this.config.AI_ENABLED && this.config.FINBERT_ENABLED ? n : { ...n, sentiment: null, sentimentMethod: null });
     const version = (
       await this.store.find(
         'event_calendar_versions',

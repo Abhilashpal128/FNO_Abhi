@@ -57,6 +57,8 @@ const definitions: Record<Collection, Record<string, unknown>> = {
   market_features: { instrumentKey: S, asOf: N, mode: S, advanced: M },
   strategy_decisions: { runId: S, instrumentKey: S, asOf: N, regime: S, decisions: [M] },
   news_briefings: {
+    method: S,
+    aiStatus: S,
     day: S,
     cutoff: N,
     createdAt: N,
@@ -198,6 +200,7 @@ const definitions: Record<Collection, Record<string, unknown>> = {
     volume: [M],
   },
   trade_signals: {
+    designation: S,
     advanced: M,
     newsFeatures: M,
     day: S,

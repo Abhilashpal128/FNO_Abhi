@@ -12,6 +12,7 @@ import {
   onBalanceVolume,
   accumulationDistribution,
   priceVolumeDivergence,
+  IncrementalVolumeState,
 } from '../src/engines/advanced-volume.js';
 import { StrategyRegistry } from '../src/engines/strategy.js';
 import {
@@ -22,6 +23,7 @@ import {
   chronologicalSplits,
 } from '../src/engines/evaluation.js';
 import { StorageHealthService, assessStorage } from '../src/services/storage.js';
+import { ResearchQualityService } from '../src/services/quality.js';
 import { MemoryStore } from '../src/db/store.js';
 import { automaticExpiry, defaultRetention } from '../src/db/retention.js';
 import { canonicalNewsUrl, officialNewsSource as officialSource } from '../src/providers/news.js';
@@ -71,6 +73,22 @@ beforeAll(async () => {
 });
 
 describe('advanced volume mathematics and availability', () => {
+  it('updates bounded VWAP sums for repeated candles, corrections and gaps', () => {
+    const state = new IncrementalVolumeState();
+    state.observe(candle(0));
+    state.observe(candle(1));
+    state.observe(candle(1));
+    expect(state.sessionVwap('TEST', DEMO_DAY)).toBe(101);
+    state.observe({ ...candle(1), close: 104 });
+    expect(state.sessionVwap('TEST', DEMO_DAY)).toBe(101.5);
+    state.observe(candle(3));
+    expect(state.sessionVwap('TEST', DEMO_DAY)).toBeNull();
+    for (let i = 0; i < 700; i++) state.observe(candle(i));
+    expect(state.rows('TEST')).toHaveLength(500);
+    expect(state.sessionVwap('TEST', DEMO_DAY)).toBeNull();
+    state.reset();
+    expect(state.rows('TEST')).toEqual([]);
+  });
   it('computes population SD and growth acceleration using independent expected values', () => {
     expect(volumeMoments([1, 2, 3])).toEqual({ mean: 2, stdDev: Math.sqrt(2 / 3) });
     expect(volumeAcceleration([100, 200, 600])).toBe(1);
@@ -266,7 +284,7 @@ describe('source grounded news', () => {
       ),
     ).toThrow();
   });
-  it('excludes late receipts from the fixed 09:00 cutoff and degrades without a model', async () => {
+  it('excludes late receipts from the fixed 09:00 cutoff and publishes a source digest without AI', async () => {
     const cutoff = atIST(DEMO_DAY, '09:00'),
       transport = vi.fn();
     const result = await createBriefing(
@@ -277,7 +295,9 @@ describe('source grounded news', () => {
       transport,
     );
     expect(result.sourceIds).toEqual(['n1']);
-    expect(result.status).toBe('DEGRADED');
+    expect(result.status).toBe('READY');
+    expect(result.method).toBe('SOURCE_DIGEST');
+    expect(result.aiStatus).toBe('DISABLED');
     expect(result.sources[0]?.summary).toBe(news.summary);
     expect(transport).not.toHaveBeenCalled();
   });
@@ -305,7 +325,7 @@ describe('source grounded news', () => {
       [news],
       open,
       open + 1,
-      { ...s.config, OLLAMA_BASE_URL: 'http://127.0.0.1:11434' },
+      { ...s.config, AI_ENABLED: true, QWEN_ENABLED: true, OLLAMA_BASE_URL: 'http://127.0.0.1:11434' },
       transport,
     );
     expect(brief.status).toBe('READY');
@@ -314,6 +334,12 @@ describe('source grounded news', () => {
 });
 
 describe('candidate-time outcome quality and validation', () => {
+  it('counts admitted candidates even when no outcome is available yet', async () => {
+    const report = await new ResearchQualityService(s.store, s.config).report();
+    expect(report.eligibleOpportunities).toBe(1);
+    expect(report.labeledOpportunities).toBe(0);
+    expect(report.signalCoverage).toBe(0);
+  });
   function observation(offset: number, bid: number, ask = bid + 0.1): Quote {
     return {
       ...signal.quote,

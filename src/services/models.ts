@@ -1,16 +1,32 @@
 import { z } from 'zod';
 import type { Store } from '../db/store.js';
+import type { Config } from '../config.js';
+export function aiStatus(config: Pick<Config, 'AI_ENABLED' | 'QWEN_ENABLED' | 'FINBERT_ENABLED' | 'LIGHTGBM_ENABLED'>) {
+  const enabled = config.AI_ENABLED;
+  return {
+    status: enabled ? 'ENABLED' : 'DISABLED',
+    qwen: enabled && config.QWEN_ENABLED ? 'ENABLED' : 'DISABLED',
+    finbert: enabled && config.FINBERT_ENABLED ? 'ENABLED' : 'DISABLED',
+    lightgbm: enabled && config.LIGHTGBM_ENABLED ? 'ENABLED' : 'DISABLED',
+    groq: 'DISABLED',
+    huggingFaceApi: 'DISABLED',
+    openRouter: 'DISABLED',
+  } as const;
+}
 /** Optional serving contract. Never falls back to a technical-score probability. */
 export class ValidatedModelService {
   constructor(
     private store: Store,
     private url: string,
+    private flags: Pick<Config, 'AI_ENABLED' | 'LIGHTGBM_ENABLED'> = { AI_ENABLED: false, LIGHTGBM_ENABLED: false },
   ) {}
   async predict(
     modelId: string,
     features: Record<string, number | null>,
     asOf: number,
   ): Promise<{ probability: number | null; reason: string; modelVersion: string | null }> {
+    if (!this.flags.AI_ENABLED || !this.flags.LIGHTGBM_ENABLED)
+      return { probability: null, reason: 'AI_DISABLED', modelVersion: null };
     const model = await this.store.get('model_versions', modelId);
     if (
       !this.url ||

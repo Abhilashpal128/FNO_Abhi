@@ -27,8 +27,8 @@ const csv = z
 export const configSchema = z
   .object({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    HOST: z.string().default('127.0.0.1'),
-    PORT: positive(3000),
+    HOST: z.string().default('0.0.0.0'),
+    PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error', 'silent']).default('info'),
     DATA_MODE: z.enum(['demo', 'live']).default('demo'),
     STORAGE_MODE: z.enum(['memory', 'mongo']).default('memory'),
@@ -93,6 +93,10 @@ export const configSchema = z
     OUTCOME_HORIZON_MINUTES: positive(30),
     VALIDATION_EMBARGO_MINUTES: positive(30),
     GNEWS_API_KEY: z.string().default(''),
+    AI_ENABLED: bool.default(false),
+    QWEN_ENABLED: bool.default(false),
+    FINBERT_ENABLED: bool.default(false),
+    LIGHTGBM_ENABLED: bool.default(false),
     NEWSAPI_KEY: z.string().default(''),
     NEWS_SEARCH_QUERY: z.string().min(1).max(180).default('India RBI NSE earnings'),
     NSE_RSS_URL: optionalUrl,
@@ -106,6 +110,7 @@ export const configSchema = z
     ML_INFERENCE_URL: optionalUrl,
     RSS_FEED_URLS: csv,
     EVENT_CALENDAR_PATH: z.string().default(''),
+    EVENT_CALENDAR_JSON: z.string().default(''),
     REQUIRE_EVENT_CALENDAR: bool.default(true),
   })
   .superRefine((c, ctx) => {
@@ -113,6 +118,8 @@ export const configSchema = z
       ctx.addIssue({ code: 'custom', message: 'Live mode requires MongoDB and UPSTOX_ANALYTICS_TOKEN' });
     if (c.NODE_ENV === 'production' && c.STORAGE_MODE === 'memory')
       ctx.addIssue({ code: 'custom', message: 'Production requires persistent MongoDB' });
+    if (c.NODE_ENV === 'production' && c.DATA_MODE !== 'live')
+      ctx.addIssue({ code: 'custom', message: 'Production requires DATA_MODE=live; demo is local only' });
     if (c.BASELINE_MIN_SAMPLES > c.BASELINE_SESSIONS)
       ctx.addIssue({ code: 'custom', message: 'Baseline minimum exceeds lookback' });
     if (c.MAX_RISK_PER_TRADE > c.MAX_AGGREGATE_RISK || c.MAX_AGGREGATE_RISK > c.SIMULATED_CAPITAL)

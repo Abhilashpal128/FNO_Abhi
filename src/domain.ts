@@ -185,6 +185,7 @@ export interface Scenario {
   underlyingInvalidation: number;
 }
 export interface Opportunity extends Entity {
+  designation?: 'INTRADAY' | 'SWING';
   advanced?: AdvancedVolume;
   newsFeatures?: { asOf: number; officialCount: number | null; sentiment: number | null };
   day: string;
@@ -299,7 +300,7 @@ export interface Job extends Entity {
   error: string | null;
 }
 export interface Health extends Entity {
-  status: 'OK' | 'DEGRADED' | 'UNAVAILABLE';
+  status: 'OK' | 'DEGRADED' | 'UNAVAILABLE' | 'DISABLED';
   checkedAt: number;
   details: string[];
 }

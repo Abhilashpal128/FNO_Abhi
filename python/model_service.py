@@ -22,13 +22,14 @@ async def lifespan(app):
     app.state.sentiment = None
     app.state.predictor = None
     app.state.inference_lock = asyncio.Semaphore(1)
-    if worker_setting("FINBERT_ENABLED", "false").lower() == "true":
+    ai_enabled = worker_setting("AI_ENABLED", "false").lower() == "true"
+    if ai_enabled and worker_setting("FINBERT_ENABLED", "false").lower() == "true":
         from transformers import pipeline
         model = worker_setting("FINBERT_MODEL", "ProsusAI/finbert")
         app.state.sentiment = pipeline("text-classification", model=model, device=-1, trust_remote_code=False)
         app.state.sentiment_version = model
     bundle = worker_setting("LIGHTGBM_BUNDLE", "")
-    if bundle:
+    if ai_enabled and worker_setting("LIGHTGBM_ENABLED", "false").lower() == "true" and bundle:
         import lightgbm as lgb
         directory = Path(bundle)
         meta = json.loads((directory / "metadata.json").read_text())

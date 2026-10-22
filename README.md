@@ -62,12 +62,13 @@ src/
   engines/      Volume, indicators, strategies, scenarios, risk, replay metrics
   market/       IST/session time, cumulative-volume tracking, candle aggregation
   providers/    Read-only Upstox REST and V3 Protobuf WebSocket
-  services/     Collection, news/events, analysis, scheduler, paper accounting, ML seam
+  services/     Market/news workers, analysis, storage health, outcomes, paper accounting
   testing/      Clearly labelled deterministic demo fixture
   config.ts     Validated environment configuration
   server.ts     Startup, composition and graceful shutdown
 proto/          Official Upstox V3 schema and provenance
-scripts/        Secret setup, demo, development watcher, docs, benchmark
+scripts/        Setup, demo, docs, benchmark, training/history exports
+python/         Optional FinBERT service, LightGBM validation and verified Parquet export
 tests/          Unit, API, replay and real MongoDB integration tests
 ```
 
@@ -81,7 +82,7 @@ tests/          Unit, API, replay and real MongoDB integration tests
 6. Supply a maintained event calendar file via `EVENT_CALENDAR_PATH` (schema below). `REQUIRE_EVENT_CALENDAR=true` blocks live admissions when calendar coverage is missing. This explicit coverage requirement is separate from automatic exchange-session retrieval.
 7. Run `npm run build` and `npm start`, or `npm run dev` to rebuild/restart after source changes. `npm run demo` explicitly overrides live settings for that process and always uses the memory fixture cache.
 
-No live prices are fetched in demo mode. Live API failures never fall back to synthetic values. Initial historical retrieval can take several minutes and broker entitlement or retention limits may leave baselines unavailable. Start before 08:45 IST and inspect `/api/v1/system/health`.
+No live prices are fetched in demo mode. Live API failures never fall back to synthetic values. Initial historical retrieval can take several minutes and broker entitlement or retention limits may leave baselines unavailable. Start before 08:30 IST and inspect `/api/v1/system/health`.
 
 Example **schema only** for a local reviewed event calendar:
 
@@ -131,7 +132,7 @@ Premium levels use underlying opening structure mapped through local delta/gamma
 | `GLOBAL_NO_TRADE`                                                 | Environment kill switch that API settings cannot override |
 | `*_RATE`, `BROKERAGE_PER_ORDER`, `SLIPPAGE_BPS`, `COSTS_VERIFIED` | Explicit cost assumptions                                 |
 | `EVENT_CALENDAR_PATH`, `REQUIRE_EVENT_CALENDAR`, `RSS_FEED_URLS`  | Event/news availability and restrictions                  |
-| `FINBERT_URL`, `ML_INFERENCE_URL`                                 | Optional inference interfaces, disabled by default        |
+| `FINBERT_SERVICE_URL`, `OLLAMA_BASE_URL`, `ML_INFERENCE_URL`      | Optional inference interfaces, disabled by default        |
 
 The API uses strict input validation, request limits, Helmet, allowlisted CORS, rate limits and sanitized errors. Logging omits request bodies, credentials and broker response bodies. Use HTTPS at your reverse proxy for a remotely accessed deployment and configure only the actual trusted proxy hop count. Rate limits are process-local; this release is intended for one service process. Database transactions and unique indexes additionally protect concurrent requests and overlapping job attempts.
 
@@ -150,8 +151,20 @@ npm run format
 
 The first integration-test run downloads a platform-specific MongoDB test binary to `.cache/mongodb`; on Windows it is large. It is separate from the offline demo and is cached for later tests. No real broker credential is used in tests. See `IMPLEMENTATION_STATUS.md` for actual verification results and limitations.
 
-Backtests replay stored, time-stamped underlying candles and actual recorded option quote depth using the same strategy and risk modules. Both candle close and retrieval time must precede a decision. Missing point-in-time metadata, expired premiums, Greeks or executable spreads result in explicit insufficient data. Downloading today's historical OHLC does not fabricate a historical executable quote. The first release supports one underlying/contract per replay, a volume-free baseline comparison and regime-tagged outcomes, not a full portfolio optimizer or trained ML pipeline.
+Backtests replay stored, time-stamped underlying candles and actual recorded option quote depth using the same strategy and risk modules. Both candle close and retrieval time must precede a decision. Missing point-in-time metadata, expired premiums, Greeks or executable spreads result in explicit insufficient data. Downloading today's historical OHLC does not fabricate a historical executable quote. The first release supports one underlying/contract per replay, volume/news ablations, a volume-free baseline comparison and regime-tagged outcomes. Offline LightGBM training and calibration are provided separately; no trained market model or portfolio optimizer is supplied.
 
 Allow at least 15–30 forward-test trading sessions, then perform additional chronological validation. Passing tests verifies software behaviour; it does not establish trading accuracy or profitability.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md), [API_CONTRACT.md](API_CONTRACT.md), [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) and [Upstox contract verification](docs/UPSTOX_API_VERIFICATION.md).
+
+## Advanced research and storage update
+
+The existing backend now includes ten additional versioned strategies, volume anomalies/acceleration/OBV/ADL/divergence, source-grounded news briefings, candidate-time outcomes, offline LightGBM validation and storage-budget controls. `npm run setup` adds missing `.env.example` settings while preserving existing credentials.
+
+Raw ticks stay in memory. Selected derivative observations are persisted once per completed minute and compacted into five-minute records. Source retention is armed only after derived records are verified. Defaults are 60 days for minute candles, 365 days for aggregates, three years for daily candles, seven days for detailed option observations, 90 days for compact observations and 180 days for news. Original audit records do not expire. At 60/75/90 percent of the configured storage budget, health warns, reduces optional sampling, then stops optional snapshots.
+
+New authenticated routes include `/market/features`, `/market/option-observations`, `/strategies/decisions`, `/news/briefings/latest`, `/research/outcomes`, `/research/quality`, `/models/validation` and `/models/drift`. `/system/health` now reports measured database/index sizes, counts, growth and retention health.
+
+Set optional `GNEWS_API_KEY`, `NEWSAPI_KEY`, `NSE_RSS_URL`, `RBI_RSS_URL`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL` and `FINBERT_SERVICE_URL` only when those services are available. They remain disabled by default. The briefing worker starts before 09:00 IST and records actual availability; outages or late startup cannot guarantee an on-time report. The 09:20 analysis, fifteen-minute reassessment, thirty-minute deep evaluation and five-signal ceiling remain in place.
+
+See [advanced research, model setup and archive instructions](docs/ADVANCED_RESEARCH.md) for algorithms, retention behavior, Python commands, known data gaps, model validation and verified Parquet export. Minute snapshots cannot prove every intraminute target/stop ordering, so missing evidence remains unavailable.

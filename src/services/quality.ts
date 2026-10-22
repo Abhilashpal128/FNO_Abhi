@@ -62,6 +62,7 @@ export class ResearchQualityService {
     }
   }
   async report() {
+    const candidates = await this.store.find('trade_signals', {}, { sort: { createdAt: 1 }, limit: 10000 });
     const outcomes = await this.store.find(
         'research_outcomes',
         {},
@@ -77,6 +78,12 @@ export class ResearchQualityService {
         outcomes,
         trades.map((t) => t.pnl ?? 0),
       ),
+      eligibleOpportunities: candidates.length,
+      signalCoverage: candidates.length
+        ? outcomes.filter((o) =>
+            ['TARGET_BEFORE_STOP', 'STOP_BEFORE_TARGET', 'NEITHER_HIT'].includes(o.status),
+          ).length / candidates.length
+        : null,
       grossPnl: trades.reduce((s, t) => s + ((t.exit ?? t.entry) - t.entry) * t.quantity, 0),
       fees: trades.reduce((s, t) => s + t.entryFee + (t.exitFee ?? 0), 0),
       netPnl: trades.reduce((s, t) => s + (t.pnl ?? 0), 0),

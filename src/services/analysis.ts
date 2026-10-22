@@ -359,6 +359,7 @@ export class AnalysisService {
             continue;
           }
           const candidate: Opportunity = {
+            designation: 'INTRADAY',
             advanced,
             newsFeatures: {
               asOf: now,

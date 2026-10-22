@@ -1,56 +1,56 @@
 # Implementation status
 
-Updated **22 October 2026**. The backend implementation and local verification are complete for the initial research release. Live broker operation and strategy accuracy have not been validated. No real orders are implemented.
+Updated **22 October 2026**. The existing backend now includes advanced volume research, optional news/model workers, option-outcome evaluation and bounded storage. Real broker operation and trading accuracy have not been validated. No real order execution is implemented.
 
 ## Delivered
 
-| Area                      | Implemented behaviour                                                                                                                                                                                                |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Application and security  | Strict TypeScript, Express, validated `.env`, single-owner scrypt/JWT authentication, rate limits, safe errors, Pino redaction and health endpoints                                                                  |
-| Persistence               | MongoDB/Mongoose schemas and indexes, replica-set transactions, idempotent accounting, append-only original signals/events, metadata/calendar versions and quote retention                                           |
-| Market data               | Official Upstox REST adapters, instrument master, quotes, option chains, news, NFO session calendar, V3 protobuf socket, bounded subscriptions, retries and reconciliation                                           |
-| Candles and volume        | Completed 1/5/15/30-minute aggregation, conservative daily finalization, cumulative-volume corrections/resets, same-time RVOL, volume gates, VWAP and derivative/liquidity features                                  |
-| Research                  | Technical indicators, regime selection, versioned underlying-first strategy, actual contract metadata, Greek-based premium scenarios, volume-first ranking and immutable decision snapshots                          |
-| Risk and scheduling       | Independent capital/loss/liquidity/expiry/event gates, global no-trade switch, maximum five unique daily opportunities, 09:20 initial report, 15-minute follow-ups, 30-minute deep evaluations and restart-safe jobs |
-| Paper trading             | Explicit idempotent entries, lot/depth checks, ask/bid fills with fees/slippage, stop/target monitoring, cash accounting and realized/unrealized performance                                                         |
-| Historical replay         | Received-time cutoffs, metadata/calendar versions, recorded executable quotes, common strategy/risk modules, baseline comparison and explicit missing/unresolved outcomes                                            |
-| API and delivery          | Authenticated route groups, Zod validation, OpenAPI 3.1, offline synthetic demo, local scripts, Dockerfile and development MongoDB replica-set compose file                                                          |
-| Optional model boundaries | FinBERT sentiment HTTP adapter and a validation-gated model inference interface; unavailable probabilities/sentiment remain null                                                                                     |
+| Area                 | Implemented behaviour                                                                                                                                                                   |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Application/security | Strict TypeScript, Express, validated environment, owner authentication, rate limits, redaction, existing API and demo preserved                                                        |
+| Market collection    | Existing read-only Upstox adapters, session-aware scheduling, continuous V3 feed, memory quote/cumulative-volume state and completed candles                                            |
+| Low-cost persistence | Selected minute quote sampling, deterministic IDs, bounded batches, compact five-minute observations and capped selection                                                               |
+| Volume               | Existing multi-timeframe/same-time RVOL plus mean/SD/z-score, acceleration, approximate VWAP, OBV, ADL, divergence, breakout/rejection and participation hypotheses                     |
+| Strategies           | Ten additions plus preserved opening strategy and EMA baseline; versioned eligibility/status/reasons/timestamps, regime restrictions and independent risk gate                          |
+| News                 | Upstox, optional official RSS/GNews/NewsAPI, deduplication/clustering, source attribution, FinBERT HTTP integration, schema-validated extractive Ollama/Qwen briefing                   |
+| Outcomes             | Candidate-time selected-option target-before-stop evidence, explicit entry/fill/ambiguity/gaps/invalidation and retained original signals                                               |
+| Validation           | Actual offline LightGBM pipeline: chronological splits, purging/embargo, development-only tuning, separate calibration, unseen metrics, four ablations and permutation importance       |
+| Storage              | Configurable market/news TTL, derivation before source expiry, restart compaction, incomplete-session retention, measured budget/growth/index/count health and optional-data throttling |
+| Archive              | Read-only JSONL export plus compressed Parquet, source/readback SHA-256 verification and no exporter-driven MongoDB deletion                                                            |
+| API/docs             | New features/decisions/briefings/outcomes/quality/validation/drift endpoints, expanded storage health, OpenAPI and setup documentation                                                  |
 
-## Verification actually run
+The 09:20 initial report, fifteen-minute reassessment, thirty-minute deep analysis, manual refresh, paper accounting and maximum five unique daily opportunities are preserved. Missing market data yields no trade or unavailable evidence. All ranking probabilities remain null.
 
-Environment: Windows, Node.js **24.11.1**. No live broker credentials were used.
+## Verification
 
-| Check                                | Observed result                                                                                                                                                       |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run check`                      | Strict typecheck, lint, **73 tests across 6 files**, and production build passed                                                                                      |
-| `npm run test:integration`           | **4 tests passed** against an actual temporary MongoDB 8.0.12 replica set                                                                                             |
-| `node scripts/smoke.mjs` after build | Compiled server readiness, unauthenticated denial, login, synthetic initial report, paper entry and OpenAPI retrieval passed; isolated child server stopped afterward |
-| `node dist/scripts/openapi.js`       | Generated `openapi.json` successfully                                                                                                                                 |
-| `npm audit --audit-level=high`       | **0 vulnerabilities** reported                                                                                                                                        |
-| `node dist/scripts/benchmark.js`     | **100,000 synthetic observations in 1,332 ms**, approximately 75,086 observations/second; database and network excluded                                               |
+Local environment: Windows, Node.js **24.11.1**, portable Python **3.13.17**, temporary MongoDB **8.0.12** replica set. No live broker credentials or transformer model weights were used.
 
-Regression coverage includes duplicate live/historical candles, first-receipt preservation, correction timing, invalidated volume baselines, cross-minute uncertainty after flush, official-OHLC precedence, daily completion, malformed expiry/lot/strike metadata, calendar removals and replay end-time boundaries. MongoDB tests exercise concurrent signal/paper admission, rollback, append-only restrictions, unique indexes and bulk writes across a 1,000-record batch boundary. API tests validate actual responses against the generated response schemas.
+Final local verification results:
 
-The benchmark measures a CPU calculation only. These tests establish software behaviour, not trading profitability, forecast accuracy or production broker throughput.
+| Check                      | Result                                                                                                                                    |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run check`            | Strict typecheck, lint, **101 tests across 7 files**, and production build passed                                                         |
+| `npm run test:integration` | **6 tests passed** against a real temporary replica set, including actual TTL expiration and storage measurement                          |
+| Python unittest            | **7 tests passed**, including actual LightGBM training, validation leakage test, Parquet round-trip/corruption and local service contract |
+| Compiled smoke             | Passed readiness, authentication, synthetic report, explicit paper entry and OpenAPI                                                      |
+| npm audit                  | **0 vulnerabilities** reported                                                                                                            |
 
-## Required before live operation
+Tests include no per-tick database writes, bounded/idempotent minute sampling, compaction before expiry, full-session aggregate/baseline preservation, incomplete-session protection, budget transitions, volume mathematics, cutoff/citation validation, strategy statuses, gap-aware option labels and existing risk/scheduler regressions. Changing unseen labels in the training test leaves hyperparameter selection and calibration unchanged. Python service tests mock sentiment inference; they do not claim FinBERT weights were downloaded or a real Qwen model was run.
 
-1. Configure an authorized `UPSTOX_ANALYTICS_TOKEN`, `DATA_MODE=live`, `STORAGE_MODE=mongo` and a MongoDB replica-set URI in `.env`.
-2. Review your actual cost assumptions before setting `COSTS_VERIFIED=true`; maintain the reviewed economic/company calendar specified by `EVENT_CALENDAR_PATH`.
-3. Verify real account entitlement, instrument tick/lot metadata, quote units and freshness, WebSocket delivery, holiday/special-session timings and collection capacity. See [official contract verification](docs/UPSTOX_API_VERIFICATION.md).
-4. Collect sufficient historical baselines and point-in-time option observations. Start before preparation time and check authenticated system health. Missing data returns `INSUFFICIENT_DATA` or `NO_TRADE`.
-5. Forward-test for at least 15–30 trading sessions and perform additional chronological validation before considering the research evidence meaningful.
+One additional Mongo test launch exited with Windows process code 14 before any test ran; a diagnostic rerun passed all six tests and shut down the temporary replica set. The passing log is local at `.cache/mongo-check.log`.
 
-## Explicit boundaries
+Tests establish software behaviour, not forecast accuracy, profitable trading or broker-certified throughput. The existing CPU benchmark excludes database/network costs and is not a live capacity measurement.
 
-- The opening-participation strategy, thresholds and Greek premium approximation are unvalidated research hypotheses. Probabilities are null; no trained LightGBM/FinBERT service, training pipeline, calibration evidence or successful market performance is supplied.
-- Backtests replay one underlying/contract from recorded observations. They cannot manufacture expired-option depth or Greeks from historical OHLC. A general licensed expired-history importer and portfolio-level simulator are outside this initial release.
-- Candles are correctable records. Identical downloads preserve original availability, while corrections get a later timestamp. Replacing a historical revision can make earlier replay insufficient; original published signal snapshots stay immutable.
-- News uses configured permitted feeds and the first page of recent Upstox instrument news. This is not a complete historical archive or automatic complete earnings calendar. FinBERT is optional; sector-relative strength and licensed global macro coverage are unavailable without suitable sources.
-- Deep evaluations recompute the full existing feature/regime pipeline; there is no separate validated ML regime model. Unknown OI update times and uncertain participant intent remain explicit.
-- Quotes are sampled into storage at most once per instrument per second. This supports the documented recorded-quote replay, not exchange tick-perfect execution. Locally sampled candle OHLC cannot qualify research until valid source OHLC arrives.
-- Unfillable paper exits remain unresolved open positions. Stops and estimated loss are not guarantees. A replay with an unresolved exit stops further entries.
-- Use one application process initially. MongoDB handles concurrent admissions, but feed ownership, request pacing and API rate limits are process-local. Deployment, TLS, backups, production database authentication and live operational acceptance remain the operator's responsibility.
+## Required configuration and data boundaries
 
-Run `npm run demo` for the offline backend. Local login details are in `.env`; [README.md](README.md) documents setup and API use.
+- Live operation requires the user's authorized Upstox token, MongoDB replica set, current cost assumptions and maintained event-calendar coverage in `.env`. Missing keys remain empty; none were invented.
+- GNews, NewsAPI, official RSS and local inference are disabled until configured. The optional Python worker and Ollama require their runtimes/models. The news worker starts before 09:00, but late startup or an outage can miss the deadline; actual availability is retained.
+- Briefing events are exact source excerpts with verified references. Official attribution does not independently prove a claim. Name-based mapping and headline clustering cannot establish exhaustive company/event coverage.
+- Index spot volume, authoritative sector mappings, full global macro coverage and exact OI exchange-update times are unavailable unless a suitable source supplies them. Futures confirmation is unavailable when comparable observations are missing.
+- Candle VWAP and rolling-window OBV/ADL have documented approximation/rebasing semantics. Sampled option OHLC is not exchange OHLC. No participant intent is inferred from CE/PE activity or OI alone.
+- One-minute snapshots save storage but cannot prove every stop/target sequence. Restarts can lose live-only outcome evidence; research/replay then returns unavailable rather than reconstructing fictitious ticks. Expired detailed quotes cannot be regenerated from compact aggregates.
+- Original audit records do not expire. Incomplete minute sessions remain stored until derivation is verified. Optional-data throttling is not a hard disk quota, and untouched legacy aggregate/profile/news records may need a separate reviewed migration. Follow storage health and use verified archival exports where appropriate.
+- Training requires at least 300 usable option outcomes; no trained market model, calibrated live probability or performance improvement is claimed. Exports are bounded and use retained candidate features; unavailable premium-path, sector and broader history features remain missing. Imported reports never approve serving.
+- Replay is one underlying/contract at a time and requires point-in-time metadata, receipt-valid bars and recorded depth. A portfolio optimizer, licensed expired-history importer and exercise/settlement simulator are not supplied.
+- Deploy one Node process initially. Feed ownership, rate limits and local workers are process-local. TLS, production database credentials, backups and operational acceptance remain deployment tasks.
+
+Use `npm run demo` for the offline backend. Local login details remain in `.env`. See [README](README.md), [API contract](API_CONTRACT.md), [advanced setup/storage/model/archive guide](docs/ADVANCED_RESEARCH.md) and [pre-change storage audit](docs/STORAGE_AUDIT.md).

@@ -22,7 +22,10 @@ import { openapi } from './openapi.js';
 import type { StorageHealthService } from '../services/storage.js';
 import { ResearchQualityService } from '../services/quality.js';
 import { advancedVolume } from '../engines/advanced-volume.js';
+import { aiStatus } from '../services/models.js';
 export interface Services {
+  beforeRequest?: (path: string, method: string) => Promise<void>;
+  runtime?: 'persistent' | 'vercel';
   storage?: StorageHealthService;
   quality?: ResearchQualityService;
   store: Store;
@@ -60,7 +63,7 @@ export function createApp(s: Services) {
     });
   app.use(limiter(60000, 120));
   app.get('/healthz', (_req, res) =>
-    res.json({ status: 'OK', service: 'stockss-intelligence', mode: s.config.DATA_MODE }),
+    res.json({ status: 'OK', service: 'stockss-intelligence', mode: s.config.DATA_MODE, ai: aiStatus(s.config) }),
   );
   app.get('/readyz', async (_req, res) => {
     const db = await s.store.healthy();
@@ -103,6 +106,10 @@ export function createApp(s: Services) {
   router.get('/auth/me', (_req, res) =>
     respond(res, { username: s.config.APP_USERNAME, scope: 'research:owner' }),
   );
+  router.use(async (req, _res, next) => {
+    await s.beforeRequest?.(req.path, req.method);
+    next();
+  });
   router.get('/openapi.json', (_req, res) => res.json(openapi));
   router.get('/market', (_req, res) =>
     respond(res, {
@@ -467,6 +474,8 @@ export function createApp(s: Services) {
   });
   router.get('/system/health', async (_req, res) =>
     respond(res, {
+      ai: aiStatus(s.config),
+      runtime: s.runtime ?? 'persistent',
       database: await s.store.healthy(),
       persistent: s.store.persistent,
       feed: s.market.feed?.status() ?? null,

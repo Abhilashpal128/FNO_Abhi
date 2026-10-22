@@ -94,11 +94,9 @@ export class MarketService {
     } else this.session = await this.store.get('market_sessions', dayKey(now));
     return this.session;
   }
-  async prepare(now = Date.now()) {
+  async loadUniverse(now = Date.now()) {
     if (!this.provider) return;
     const day = dayKey(now);
-    await this.loadSession(now);
-    if (!this.session?.trading) return;
     const all = await this.provider.instruments();
     if (!all.length) throw new Error('Empty instrument master');
     const eligibleUnderlying = new Set(
@@ -142,7 +140,14 @@ export class MarketService {
         if (future) this.volumeKeys.set(u.id, future.id);
       } else this.volumeKeys.set(u.id, u.id);
     }
-    const tracked = [...new Set([...selected.map((i) => i.id), ...this.volumeKeys.values()])];
+  }
+  async prepare(now = Date.now(), options: { stream: boolean } = { stream: true }) {
+    if (!this.provider) return;
+    const day = dayKey(now);
+    await this.loadSession(now);
+    if (!this.session?.trading) return;
+    await this.loadUniverse(now);
+    const tracked = [...new Set([...this.underlyings.map((i) => i.id), ...this.volumeKeys.values()])];
     for (const key of tracked) {
       const profiles = await this.store.find(
         'market_volume_profiles',
@@ -161,7 +166,7 @@ export class MarketService {
     for (const q of baseQuotes) await this.acceptQuote(q);
     await this.refreshContracts(now);
     const subscriptions = this.subscriptionPriorities();
-    if (!this.feed) {
+    if (options.stream && !this.feed) {
       this.feed = new MarketFeed(
         this.provider,
         this.config,
@@ -173,7 +178,7 @@ export class MarketService {
         },
       );
       await this.feed.start(subscriptions);
-    } else this.feed.updateSubscriptions(subscriptions);
+    } else if (options.stream) this.feed?.updateSubscriptions(subscriptions);
     this.preparedDay = day;
     await this.reconcile(now);
   }
@@ -369,7 +374,6 @@ export class MarketService {
   }
   async persistCandle(c: Candle) {
     if (!c.complete) return;
-    this.volumeState.observe(c);
     const previous = (
       await this.store.find(
         'market_candles',
@@ -381,6 +385,7 @@ export class MarketService {
     // Exact provider OHLC replaces tick approximations; later tick flushes cannot overwrite reconciliation.
     if (previous && previous.source !== 'upstox-v3-ticks' && c.source === 'upstox-v3-ticks') return;
     if (previous && sameCandleObservation(previous, c)) return;
+    this.volumeState.observe(c);
     await this.store.put('market_candles', c);
     if (c.interval === 1 && this.session && dayKey(c.start) === this.session.day) {
       for (const interval of [5, 15, 30]) {

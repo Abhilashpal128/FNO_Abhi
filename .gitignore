@@ -2,6 +2,7 @@ node_modules/
 dist/
 coverage/
 .cache/
+.vercel/
 artifacts/
 .venv/
 __pycache__/

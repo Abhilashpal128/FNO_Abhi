@@ -73,7 +73,7 @@ export class MarketScheduler {
     this.coordinator = new JobCoordinator(store);
   }
   start() {
-    if (!this.config.SCHEDULER_ENABLED || this.config.DATA_MODE === 'demo') return;
+    if (this.timer || !this.config.SCHEDULER_ENABLED || this.config.DATA_MODE === 'demo') return;
     const tick = () => {
       if (this.busy || this.stopped) return;
       this.busy = true;

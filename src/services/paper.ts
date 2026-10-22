@@ -246,9 +246,22 @@ export class PaperService {
         };
       });
     const closed = trades.filter((t) => t.status === 'CLOSED').sort((a, b) => a.closedAt! - b.closedAt!);
+    const dailyClosed = closed.filter((t) => t.closedAt !== null && dayKey(t.closedAt) === dayKey(now));
     return {
       account: await this.store.get('private_accounts', 'owner'),
       metrics: performance(closed.map((t) => t.pnl!)),
+      daily: {
+        day: dayKey(now),
+        timezone: 'Asia/Kolkata',
+        ...performance(dailyClosed.map((t) => t.pnl!)),
+        wins: dailyClosed.filter((t) => t.pnl! > 0).length,
+        losses: dailyClosed.filter((t) => t.pnl! < 0).length,
+        breakeven: dailyClosed.filter((t) => t.pnl === 0).length,
+        fees: dailyClosed.reduce((sum, t) => sum + t.entryFee + (t.exitFee ?? 0), 0),
+        grossPnl: dailyClosed.reduce((sum, t) => sum + (t.exit! - t.entry) * t.quantity, 0),
+        costsVerified: this.config.COSTS_VERIFIED,
+        methodology: 'Completed paper trades by IST exit date; net P&L includes simulated fees and execution slippage; raw signals excluded',
+      },
       open,
       closed,
       validation: {

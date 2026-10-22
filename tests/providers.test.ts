@@ -10,6 +10,16 @@ const config = configSchema.parse({
   UPSTOX_ANALYTICS_TOKEN: 'fixture-token',
 });
 describe('verified Upstox wire adapters', () => {
+  it('accepts actual V3 index null volume/OI without fabricating zero participation', () => {
+    const quote = normalizeRestQuote({ instrument_token: 'NSE_INDEX|Nifty 50', last_price: 25000,
+      timestamp: new Date(DEMO_NOW).toISOString(), last_trade_time: String(DEMO_NOW - 60000),
+      volume: null, oi: null, previous_oi: null, depth: null,
+    }, DEMO_NOW);
+    expect(quote.cumulativeVolume).toBeNull();
+    expect(quote.oi).toBeNull();
+    expect(quote.previousOi).toBeNull();
+    expect(quote.bid).toBeNull();
+  });
   it('decodes official V3 protobuf and preserves absent fields as null', async () => {
     const root = await protobuf.load('proto/MarketDataFeed.proto'),
       type = root.lookupType('com.upstox.marketdatafeederv3udapi.rpc.proto.FeedResponse');

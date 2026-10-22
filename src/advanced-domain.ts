@@ -104,6 +104,8 @@ export interface StrategyRecord extends Entity {
   decisions: StrategyAssessment[];
 }
 export interface NewsBriefing extends Entity {
+  method?: 'SOURCE_DIGEST' | 'GROUNDED_MODEL';
+  aiStatus?: 'ENABLED' | 'DISABLED';
   day: string;
   cutoff: number;
   createdAt: number;
@@ -112,6 +114,7 @@ export interface NewsBriefing extends Entity {
   model: string | null;
   sourceIds: string[];
   sources: {
+    instrumentKeys?: string[];
     id: string;
     headline: string;
     summary: string;

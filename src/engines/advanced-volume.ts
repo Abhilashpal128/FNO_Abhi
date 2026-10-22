@@ -192,22 +192,51 @@ export function advancedVolume(
 /** Keeps bounded completed-minute history in memory; repeats/corrections replace the same start. */
 export class IncrementalVolumeState {
   private series = new Map<string, Candle[]>();
+  private totals = new Map<
+    string,
+    { count: number; invalid: number; volume: number; weightedPrice: number }
+  >();
+  private adjust(c: Candle, sign: 1 | -1) {
+    const key = `${c.instrumentKey}:${dayKey(c.start)}`;
+    const sum = this.totals.get(key) ?? { count: 0, invalid: 0, volume: 0, weightedPrice: 0 };
+    sum.count += sign;
+    if (c.volume === null || c.volume < 0 || c.quality.length) sum.invalid += sign;
+    else {
+      sum.volume += sign * c.volume;
+      sum.weightedPrice += (sign * c.volume * (c.high + c.low + c.close)) / 3;
+    }
+    if (sum.count) this.totals.set(key, sum);
+    else this.totals.delete(key);
+  }
   observe(c: Candle) {
     if (c.interval !== 1 || !c.complete) return;
     const rows = this.series.get(c.instrumentKey) ?? [];
     const i = rows.findIndex((r) => r.start === c.start);
-    if (i >= 0) rows[i] = c;
-    else rows.push(c);
+    if (i >= 0) {
+      this.adjust(rows[i]!, -1);
+      rows[i] = c;
+    } else rows.push(c);
+    this.adjust(c, 1);
     rows.sort((a, b) => a.start - b.start);
+    if (rows.length > 500) for (const removed of rows.slice(0, -500)) this.adjust(removed, -1);
     this.series.set(c.instrumentKey, rows.slice(-500));
   }
   rows(key: string) {
     return this.series.get(key) ?? [];
   }
-  sessionVwap(key: string, day: string) {
-    return vwap(this.rows(key).filter((c) => dayKey(c.start) === day && c.quality.length === 0));
+  sessionVwap(key: string, day: string, open = atIST(day, '09:15')) {
+    const sum = this.totals.get(`${key}:${day}`);
+    const rows = this.rows(key).filter((c) => dayKey(c.start) === day);
+    return sum &&
+      !sum.invalid &&
+      sum.volume > 0 &&
+      rows[0]?.start === open &&
+      rows.every((c, i) => i === 0 || c.start === rows[i - 1]!.end)
+      ? sum.weightedPrice / sum.volume
+      : null;
   }
   reset() {
     this.series.clear();
+    this.totals.clear();
   }
 }

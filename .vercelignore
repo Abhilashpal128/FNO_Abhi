@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.git
+.cache
+.venv
+__pycache__
+node_modules
+dist
+artifacts
+coverage
+python
+tests
+*.log
+*.pem
+*.key
+*.p12

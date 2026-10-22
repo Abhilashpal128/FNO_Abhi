@@ -122,10 +122,10 @@ const quoteSchema = z.object({
   last_price: num,
   timestamp: z.string(),
   last_trade_time: timestamp,
-  volume: num.optional(),
-  oi: num.optional(),
-  previous_oi: num.optional(),
-  depth: z.object({ buy: z.array(depth), sell: z.array(depth) }).optional(),
+  volume: num.nullish(),
+  oi: num.nullish(),
+  previous_oi: num.nullish(),
+  depth: z.object({ buy: z.array(depth), sell: z.array(depth) }).nullish(),
 });
 export function normalizeRestQuote(raw: unknown, receivedAt: number): Quote {
   const r = quoteSchema.parse(raw),
