@@ -57,7 +57,9 @@ export class MarketService {
     readonly config: Config,
     readonly provider: UpstoxProvider | null,
     private log: Logger,
-  ) { this.snapshotStride = config.DATA_MODE === 'live' ? 0 : 1; }
+  ) {
+    this.snapshotStride = config.DATA_MODE === 'live' ? 0 : 1;
+  }
   selectSnapshots(keys: Iterable<string>) {
     this.snapshotKeys = new Set([...keys].slice(0, this.config.MAX_SNAPSHOT_INSTRUMENTS));
   }
@@ -121,7 +123,8 @@ export class MarketService {
     this.recordedVersions.clear();
     this.volumeState.reset();
     this.watchedKeys.clear();
-    for (const t of await this.store.find('paper_trades', { status: 'OPEN' })) this.watchedKeys.add(t.instrumentKey);
+    for (const t of await this.store.find('paper_trades', { status: 'OPEN' }))
+      this.watchedKeys.add(t.instrumentKey);
     for (const s of await this.store.find('trade_signals', { day })) {
       this.watchedKeys.add(s.contract.id);
       this.watchedKeys.add(s.underlying.id);

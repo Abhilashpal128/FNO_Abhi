@@ -141,10 +141,14 @@ export class MemoryStore implements Store {
   ): Promise<Collections[K][]> {
     const rows = [...this.table(name).values()].filter((row) => {
       const value = row as { id: string };
-      return matches({ ...value,
-        retentionAt: this.expirations.get(name)?.get(value.id),
-        retentionRetryAt: this.retentionRetries.get(`${name}:${value.id}`),
-      }, query);
+      return matches(
+        {
+          ...value,
+          retentionAt: this.expirations.get(name)?.get(value.id),
+          retentionRetryAt: this.retentionRetries.get(`${name}:${value.id}`),
+        },
+        query,
+      );
     });
     if (options.sort)
       rows.sort((a, b) => {
@@ -218,7 +222,9 @@ export class MongoStore implements Store {
     for (let i = 0; i < ids.length; i += 500)
       await this.models[name].collection.updateMany(
         { id: { $in: ids.slice(i, i + 500) } },
-        { $set: { retentionRetryAt: new Date(until) } }, { session: this.session });
+        { $set: { retentionRetryAt: new Date(until) } },
+        { session: this.session },
+      );
   }
   private decorate<K extends Collection>(name: K, value: Collections[K]): Record<string, unknown> {
     const at = automaticExpiry(name, value, this.policy);
@@ -229,11 +235,21 @@ export class MongoStore implements Store {
       try {
         await this.models[name].insertMany(
           values.slice(i, i + 500).map((v) => this.decorate(name, v)),
-          { ordered: false, session: this.session },
+          { ordered: false, session: this.session, throwOnValidationError: true },
         );
       } catch (e) {
-        const error = e as { code?: number; writeErrors?: { code: number }[] };
-        if (error.code !== 11000 || error.writeErrors?.some((w) => w.code !== 11000)) throw e;
+        // Mongoose copies driver WriteErrors and can move their prototype getter under `err`.
+        const error = e as {
+          code?: number;
+          writeErrors?: { code?: number; err?: { code?: number } }[];
+          mongoose?: { validationErrors?: unknown[] };
+        };
+        if (
+          error.code !== 11000 ||
+          error.writeErrors?.some((w) => (w.code ?? w.err?.code) !== 11000) ||
+          error.mongoose?.validationErrors?.length
+        )
+          throw e;
       }
   }
   async armRetention(name: Collection, ids: string[], at: number) {
@@ -304,6 +320,28 @@ export class MongoStore implements Store {
     }
     const models = createModels(connection);
     await Promise.all(Object.values(models).map((m) => m.init()));
+    // Old per-second snapshots carried TTL before compaction existed. Suspend that legacy expiry
+    // once; bounded maintenance will compact and re-arm only verified market observations.
+    if (!(await models.system_health.collection.findOne({ id: 'retention-contract-v2' }))) {
+      await models.option_snapshots.collection.updateMany(
+        { retentionAt: { $exists: true }, id: { $not: /^minute:/ } },
+        { $unset: { retentionAt: '' } },
+      );
+      await models.system_health.collection.updateOne(
+        { id: 'retention-contract-v2' },
+        {
+          $set: {
+            id: 'retention-contract-v2',
+            status: 'OK',
+            checkedAt: Date.now(),
+            details: [
+              'Legacy snapshot expiry suspended until compaction verification; audit records retained',
+            ],
+          },
+        },
+        { upsert: true },
+      );
+    }
     return new MongoStore(connection, models, policy);
   }
   async get<K extends Collection>(name: K, id: string): Promise<Collections[K] | null> {

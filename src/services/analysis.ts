@@ -364,7 +364,11 @@ export class AnalysisService {
               asOf: now,
               officialCount: news.items.length ? news.items.filter((n) => n.official).length : null,
               sentiment: news.items.some((n) => n.sentiment !== null)
-                ? news.items.reduce((sum, n) => sum + (n.sentiment === 'positive' ? 1 : n.sentiment === 'negative' ? -1 : 0), 0) : null,
+                ? news.items.reduce(
+                    (sum, n) => sum + (n.sentiment === 'positive' ? 1 : n.sentiment === 'negative' ? -1 : 0),
+                    0,
+                  )
+                : null,
             },
             id: randomUUID(),
             day,

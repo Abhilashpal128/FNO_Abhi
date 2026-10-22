@@ -31,7 +31,7 @@ try {
   const cursor = db
     .collection(collection)
     .find({ [timeField]: { $gte: from, $lt: to } })
-    .project({ _id: 0, retentionAt: 0 })
+    .project({ _id: 0, retentionAt: 0, retentionRetryAt: 0 })
     .sort({ [timeField]: 1, id: 1 })
     .batchSize(500);
   for await (const row of cursor) {

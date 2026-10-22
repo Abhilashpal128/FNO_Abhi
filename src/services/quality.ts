@@ -28,9 +28,14 @@ export class ResearchQualityService {
       { createdAt: { $gte: now - 86400000 } },
       { limit: 100 },
     );
+    const persisted = new Set(signals.map((s) => s.id));
+    for (const id of this.active.keys()) if (!persisted.has(id)) this.active.delete(id);
     for (const signal of signals) {
       const id = `outcome:${signal.id}:${signal.createdAt + this.config.OUTCOME_HORIZON_MINUTES * 60000}`;
-      if (await this.store.get('research_outcomes', id)) continue;
+      if (await this.store.get('research_outcomes', id)) {
+        this.active.delete(signal.id);
+        continue;
+      }
       if (!this.active.has(signal.id)) {
         this.register(signal);
         const quotes = await this.store.find(

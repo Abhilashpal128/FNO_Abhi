@@ -163,9 +163,9 @@ export interface ValidationSample {
   label: 0 | 1;
   regime: Regime;
   features: Record<string, number | null>;
-  grossPnl: number;
-  fees: number;
-  slippage: number;
+  grossPnl: number | null;
+  fees: number | null;
+  slippage: number | null;
 }
 export interface ValidationReport extends Entity {
   createdAt: number;

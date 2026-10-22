@@ -21,7 +21,9 @@ export class MinuteSampler {
   get size() {
     return this.pending.size;
   }
-  clear() { this.pending.clear(); }
+  clear() {
+    this.pending.clear();
+  }
   trim(max: number) {
     while (this.pending.size > max) this.pending.delete(this.pending.keys().next().value!);
   }

@@ -53,7 +53,11 @@ export function volumeWindows(
     oldVol = older.reduce((sum, b) => sum + (b.volume ?? 0), 0),
     newVol = newer.reduce((sum, b) => sum + (b.volume ?? 0), 0);
   const comparison =
-    recent.length === 10 && recent.every((b) => b.volume !== null) && oldVol > 0 ? newVol / oldVol : null;
+    recent.length === 10 &&
+    recent.every((b, i) => b.volume !== null && (i === 0 || b.start === recent[i - 1]!.end)) &&
+    oldVol > 0
+      ? newVol / oldVol
+      : null;
   const priceChange = recent.length === 10 ? recent.at(-1)!.close / recent[0]!.open - 1 : 0;
   const anomalies = sessionRows.filter((b) => {
     const baseline = historicalBaseline(b, profiles, asOf, c.BASELINE_SESSIONS, c.BASELINE_MIN_SAMPLES);
@@ -79,7 +83,12 @@ export function volumeWindows(
           : null,
       samples: priorDaily.length,
     },
-    sessionVwap: vwap(sessionRows),
+    sessionVwap:
+      sessionRows.length &&
+      sessionRows[0]!.start === session?.open &&
+      sessionRows.every((b, i) => i === 0 || b.start === sessionRows[i - 1]!.end)
+        ? vwap(sessionRows)
+        : null,
     recentPriceVolumeRelationship: priceVolumeRelationship(priceChange, comparison),
     divergenceHypothesis: comparison !== null && comparison < 0.8 && Math.abs(priceChange) > 0.001,
     unusualVolumeMinutes: anomalies.map((b) => b.start),

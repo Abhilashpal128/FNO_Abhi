@@ -58,8 +58,13 @@ export async function startServer() {
   let storageJob: Promise<void> | null = null;
   const checkStorage = () => {
     if (storageJob) return;
-    storageJob = storage.check(now()).then(() => {}).catch(() => log.error('Storage health unavailable'))
-      .finally(() => { storageJob = null; });
+    storageJob = storage
+      .check(now())
+      .then(() => {})
+      .catch(() => log.error('Storage health unavailable'))
+      .finally(() => {
+        storageJob = null;
+      });
   };
   const storageTimer = setInterval(checkStorage, config.STORAGE_CHECK_INTERVAL_MS);
   checkStorage();

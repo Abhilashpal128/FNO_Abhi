@@ -172,7 +172,12 @@ export const advancedStrategies: Strategy[] = [
       d = emaDirection(c);
     if (!rows.length) return { reason: 'TIMESTAMPED_CHAIN_LIQUIDITY_UNAVAILABLE' };
     return d &&
-      rows.some((q) => q.cumulativeVolume! > 0 && q.oi! > 0 && ((q.ask! - q.bid!) / q.ask!) * 100 <= (c.maxSpreadPct ?? 1.5))
+      rows.some(
+        (q) =>
+          q.cumulativeVolume! > 0 &&
+          q.oi! > 0 &&
+          ((q.ask! - q.bid!) / q.ask!) * 100 <= (c.maxSpreadPct ?? 1.5),
+      )
       ? {
           direction: d,
           reason: 'Listed option participation with observed depth; no OI buyer/seller inference',

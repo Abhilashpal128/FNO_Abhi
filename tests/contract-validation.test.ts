@@ -17,7 +17,10 @@ describe('OpenAPI response compatibility', () => {
     await s.paper.open(signalId, 1, 'contract-test-entry', DEMO_NOW);
     const signal = (await s.store.get('trade_signals', signalId))!;
     await s.store.insert('news_briefings', await createBriefing([], DEMO_NOW, DEMO_NOW, s.config));
-    await s.store.insert('research_outcomes', new OutcomeAccumulator(signal, DEMO_NOW + 60000, 15000).finish(DEMO_NOW + 60000));
+    await s.store.insert(
+      'research_outcomes',
+      new OutcomeAccumulator(signal, DEMO_NOW + 60000, 15000).finish(DEMO_NOW + 60000),
+    );
     const bucket = Math.floor(signal.quote.sourceTs / 300000) * 300000;
     const observation = { ...signal.quote, sourceTs: bucket - 1000, receivedAt: bucket - 500 };
     await s.store.put('option_aggregates', compactOptions([observation], bucket - 300000, DEMO_NOW)!);
@@ -27,6 +30,16 @@ describe('OpenAPI response compatibility', () => {
       .post('/api/v1/auth/login')
       .send({ username: 'owner', password: TEST_PASSWORD });
     const token = login.body.data.accessToken as string;
+    const backtest = await request(app)
+      .post('/api/v1/backtests')
+      .auth(token, { type: 'bearer' })
+      .send({
+        underlyingKey: signal.underlying.id,
+        contractKey: signal.contract.id,
+        from: DEMO_NOW - 300000,
+        to: DEMO_NOW,
+      });
+    expect(backtest.status).toBe(201);
     const ajv = new Ajv2020({ strict: false, allErrors: true, validateFormats: false });
     const cases = [
       ['/auth/me', 'Identity'],
@@ -48,7 +61,10 @@ describe('OpenAPI response compatibility', () => {
       ['/news', 'News'],
       ['/backtests', 'Backtests'],
       ['/market/features?instrumentKey=DEMO%7CACME', 'MarketFeature'],
-      [`/market/option-observations?instrumentKey=${encodeURIComponent(signal.contract.id)}`, 'OptionAggregates'],
+      [
+        `/market/option-observations?instrumentKey=${encodeURIComponent(signal.contract.id)}`,
+        'OptionAggregates',
+      ],
       ['/strategies/decisions?instrumentKey=DEMO%7CACME', 'StrategyDecisions'],
       ['/news/briefings/latest', 'Briefing'],
       ['/news/briefings', 'Briefings'],

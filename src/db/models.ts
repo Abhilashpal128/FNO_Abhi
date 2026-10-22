@@ -313,10 +313,10 @@ const indexes: Partial<Record<Collection, Index[]>> = {
   instruments: [[{ underlyingKey: 1, kind: 1, expiry: 1, active: 1 }], [{ tradingSymbol: 1 }]],
   market_candles: [
     [{ instrumentKey: 1, interval: 1, start: 1 }, { unique: true }],
-    [{ end: 1, complete: 1 }],
+    [{ interval: 1, retentionAt: 1, end: 1 }],
   ],
   market_volume_profiles: [[{ instrumentKey: 1, interval: 1, minute: 1, day: -1 }, { unique: true }]],
-  option_snapshots: [[{ instrumentKey: 1, sourceTs: -1, receivedAt: -1 }]],
+  option_snapshots: [[{ instrumentKey: 1, sourceTs: -1, receivedAt: -1 }], [{ retentionAt: 1, sourceTs: 1 }]],
   market_news: [[{ instrumentKeys: 1, publishedAt: -1, receivedAt: 1 }]],
   market_sessions: [[{ day: 1 }, { unique: true }]],
   market_events: [[{ start: 1, end: 1, instrumentKeys: 1 }]],

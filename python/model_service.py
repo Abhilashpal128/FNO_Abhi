@@ -33,7 +33,7 @@ async def lifespan(app):
         directory = Path(bundle)
         meta = json.loads((directory / "metadata.json").read_text())
         # Validation evidence alone never silently approves a model for serving.
-        if meta.get("approvedForServing") is not True:
+        if meta.get("approvedForServing") is not True or meta.get("validated") is not True:
             raise RuntimeError("Model bundle requires explicit reviewed approval")
         app.state.predictor = (lgb.Booster(model_file=str(directory / "model.txt")), meta)
     yield

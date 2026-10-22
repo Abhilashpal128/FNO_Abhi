@@ -104,31 +104,51 @@ export class StorageHealthService {
       pending = 0;
     const today = atIST(dayKey(now), '00:00');
     // Recover closed buckets after restarts, subscription changes or a missed flush.
-    const observations = await this.store.find('option_snapshots', {
-      sourceTs: { $lt: Math.floor(now / (5 * MINUTE)) * 5 * MINUTE },
-      retentionAt: { $exists: false },
-    }, { sort: { sourceTs: 1 }, limit: 2500 });
+    const observations = await this.store.find(
+      'option_snapshots',
+      {
+        sourceTs: { $lt: Math.floor(now / (5 * MINUTE)) * 5 * MINUTE },
+        retentionAt: { $exists: false },
+      },
+      { sort: { sourceTs: 1 }, limit: 2500 },
+    );
     const buckets = new Map<string, { key: string; start: number }>();
     for (const q of observations) {
       const start = Math.floor(q.sourceTs / (5 * MINUTE)) * 5 * MINUTE;
       buckets.set(`${q.instrumentKey}:${start}`, { key: q.instrumentKey, start });
     }
     for (const { key, start } of [...buckets.values()].slice(0, 100)) {
-      const rows = await this.store.find('option_snapshots', {
-        instrumentKey: key, sourceTs: { $gte: start, $lt: start + 5 * MINUTE },
-      }, { sort: { sourceTs: 1 }, limit: 10000 });
+      const rows = await this.store.find(
+        'option_snapshots',
+        {
+          instrumentKey: key,
+          sourceTs: { $gte: start, $lt: start + 5 * MINUTE },
+        },
+        { sort: { sourceTs: 1 }, limit: 10000 },
+      );
       const compact = compactOptions(rows, start, now);
-      if (!compact) { pending += rows.length; continue; }
+      if (!compact) {
+        pending += rows.length;
+        continue;
+      }
       await this.store.put('option_aggregates', compact);
-      if (!(await this.store.get('option_aggregates', compact.id))) throw new Error('Missing compact observation');
-      await this.store.armRetention('option_snapshots', rows.map((r) => r.id),
-        compact.end + this.config.SNAPSHOT_RETENTION_DAYS * 86400000);
+      if (!(await this.store.get('option_aggregates', compact.id)))
+        throw new Error('Missing compact observation');
+      await this.store.armRetention(
+        'option_snapshots',
+        rows.map((r) => r.id),
+        compact.end + this.config.SNAPSHOT_RETENTION_DAYS * 86400000,
+      );
       armed += rows.length;
     }
     // Bound each maintenance pass. Missing derived data leaves the source without a TTL date.
     const candidates = await this.store.find(
       'market_candles',
-      { interval: 1, complete: true, end: { $lte: today }, retentionAt: { $exists: false },
+      {
+        interval: 1,
+        complete: true,
+        end: { $lte: today },
+        retentionAt: { $exists: false },
         $or: [{ retentionRetryAt: { $exists: false } }, { retentionRetryAt: { $lte: new Date(now) } }],
       },
       { sort: { start: 1 }, limit: 400 },
@@ -145,9 +165,15 @@ export class StorageHealthService {
         { sort: { start: 1 }, limit: 1500 },
       );
       await this.market.persistHistory(rows, now);
-      const aggregates = await this.store.find('market_candles', {
-        instrumentKey: key, start: { $gte: open, $lt: close }, interval: { $in: [5, 15, 30] },
-      }, { limit: 1500 });
+      const aggregates = await this.store.find(
+        'market_candles',
+        {
+          instrumentKey: key,
+          start: { $gte: open, $lt: close },
+          interval: { $in: [5, 15, 30] },
+        },
+        { limit: 1500 },
+      );
       const byWindow = new Map(aggregates.map((c) => [`${c.interval}:${c.start}`, c]));
       const ids: string[] = [];
       let safe = true;
@@ -165,9 +191,17 @@ export class StorageHealthService {
         if (!safe) break;
       }
       const daily = aggregateCandles(rows, Math.round((close - open) / MINUTE), open, now);
-      const existingDaily = (await this.store.find('market_candles', {
-        instrumentKey: key, interval: 1440, start: { $gte: atIST(day, '00:00'), $lt: close },
-      }, { limit: 1 }))[0];
+      const existingDaily = (
+        await this.store.find(
+          'market_candles',
+          {
+            instrumentKey: key,
+            interval: 1440,
+            start: { $gte: atIST(day, '00:00'), $lt: close },
+          },
+          { limit: 1 },
+        )
+      )[0];
       if (daily && (!existingDaily || existingDaily.source === 'complete-session-minute-aggregation')) {
         await this.store.put('market_candles', {
           ...daily,
@@ -216,14 +250,27 @@ export class StorageHealthService {
         );
         armed += rows.length;
       } else {
-        const deferredIds = [...new Set([...rows, ...candidates.filter((c) => `${c.instrumentKey}~${dayKey(c.start)}` === group)].map((r) => r.id))];
+        const deferredIds = [
+          ...new Set(
+            [...rows, ...candidates.filter((c) => `${c.instrumentKey}~${dayKey(c.start)}` === group)].map(
+              (r) => r.id,
+            ),
+          ),
+        ];
         pending += deferredIds.length;
         // Retry incomplete sessions tomorrow, allowing later sessions to be processed now.
         await this.store.deferRetention('market_candles', deferredIds, now + 86400000);
       }
     }
-    const incomplete = await this.store.find('retention_checkpoints', { status: 'INCOMPLETE' }, { limit: 1000 });
-    pending = Math.max(pending, incomplete.reduce((sum, checkpoint) => sum + checkpoint.sourceCount, 0));
+    const incomplete = await this.store.find(
+      'retention_checkpoints',
+      { status: 'INCOMPLETE' },
+      { limit: 1000 },
+    );
+    pending = Math.max(
+      pending,
+      incomplete.reduce((sum, checkpoint) => sum + checkpoint.sourceCount, 0),
+    );
     return { status: pending ? 'DEGRADED' : 'OK', checkedAt: now, armed, pending };
   }
 }

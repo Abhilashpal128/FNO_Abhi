@@ -182,11 +182,19 @@ function replay(
         bars: rows,
         advanced: ablation.volume ? advanced : undefined,
         news: ablation.news
-          ? (dataset.news ?? []).filter((n) => n.publishedAt <= asOf && n.receivedAt <= asOf &&
-              (n.instrumentKeys.includes(underlying.id) || n.classification === 'POLICY'))
+          ? (dataset.news ?? []).filter(
+              (n) =>
+                n.publishedAt <= asOf &&
+                n.receivedAt <= asOf &&
+                (n.instrumentKeys.includes(underlying.id) || n.classification === 'POLICY'),
+            )
           : [],
-        futureQuotes: ablation.volume ? dataset.futureQuotes?.filter((q) => q.sourceTs <= asOf && q.receivedAt <= asOf) : [],
-        optionQuotes: ablation.volume ? quotes.filter((q) => q.sourceTs <= asOf && q.receivedAt <= asOf).slice(-12) : [],
+        futureQuotes: ablation.volume
+          ? dataset.futureQuotes?.filter((q) => q.sourceTs <= asOf && q.receivedAt <= asOf)
+          : [],
+        optionQuotes: ablation.volume
+          ? quotes.filter((q) => q.sourceTs <= asOf && q.receivedAt <= asOf).slice(-12)
+          : [],
         maxAtrPct: c.MAX_ATR_PCT,
         maxSpreadPct: c.MAX_SPREAD_PCT,
       };

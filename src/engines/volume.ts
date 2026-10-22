@@ -84,6 +84,13 @@ export function volumeIntelligence(
     ]),
   ];
   const change = current ? (current.close - current.open) / current.open : 0;
+  const vwapRows = sessionCandles
+    .filter((c) => c.complete && c.end <= asOf && c.receivedAt <= asOf)
+    .sort((a, b) => a.start - b.start);
+  const sessionComplete =
+    opening &&
+    vwapRows[0]?.start === opening.start &&
+    vwapRows.every((c, i) => c.quality.length === 0 && (i === 0 || c.start === vwapRows[i - 1]!.end));
   return {
     asOf,
     methodology:
@@ -99,7 +106,7 @@ export function volumeIntelligence(
     volumeTrend:
       ratio === null ? 'UNKNOWN' : ratio > 1.05 ? 'EXPANDING' : ratio < 0.95 ? 'DECLINING' : 'FLAT',
     priceVolumeRelationship: priceVolumeRelationship(change, ratio),
-    vwap: vwap(sessionCandles.filter((c) => c.complete && c.end <= asOf && c.receivedAt <= asOf)),
+    vwap: sessionComplete ? vwap(vwapRows) : null,
     volumeConfirmationStatus:
       ratio === null
         ? 'INSUFFICIENT_DATA'

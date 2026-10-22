@@ -114,7 +114,9 @@ describe('real MongoDB replica-set transactions and unique indexes', () => {
     await store.armRetention('option_snapshots', [q.id], Date.now() - 1000);
     const raw = await collection.findOne({ id: q.id });
     if (raw) expect(raw.retentionAt).toBeInstanceOf(Date);
-    await expect.poll(() => store.get('option_snapshots', q.id), { timeout: 15000, interval: 200 }).toBeNull();
+    await expect
+      .poll(() => store.get('option_snapshots', q.id), { timeout: 15000, interval: 200 })
+      .toBeNull();
     const signal = (await store.find('trade_signals'))[0]!;
     await expect(store.armRetention('trade_signals', [signal.id], Date.now())).rejects.toThrow('audit');
     expect(await store.get('trade_signals', signal.id)).not.toBeNull();

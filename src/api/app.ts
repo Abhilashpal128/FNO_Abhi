@@ -399,9 +399,14 @@ export function createApp(s: Services) {
         volumeCandles: volume,
         profiles,
         quotes,
-        futureQuotes: volumeKey === underlying.id ? [] : await s.store.find('option_snapshots',
-          { instrumentKey: volumeKey, sourceTs: { $gte: body.from - 120000, $lte: body.to } },
-          { sort: { sourceTs: 1 }, limit: 100000 }),
+        futureQuotes:
+          volumeKey === underlying.id
+            ? []
+            : await s.store.find(
+                'option_snapshots',
+                { instrumentKey: volumeKey, sourceTs: { $gte: body.from - 120000, $lte: body.to } },
+                { sort: { sourceTs: 1 }, limit: 100000 },
+              ),
         from: body.from,
         to: body.to,
         createdAt: s.now(),

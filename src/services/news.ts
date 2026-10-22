@@ -150,7 +150,9 @@ export class NewsService {
           details: ['News collection failed'],
         });
       })
-      .catch(() => { /* Database outage is visible through database health. Keep the worker retryable. */ })
+      .catch(() => {
+        /* Database outage is visible through database health. Keep the worker retryable. */
+      })
       .finally(() => {
         this.collecting = null;
       });
@@ -177,7 +179,9 @@ export class NewsService {
           details: ['Briefing failed; retry on next worker cycle'],
         });
       })
-      .catch(() => { /* Database outage is visible through database health. */ })
+      .catch(() => {
+        /* Database outage is visible through database health. */
+      })
       .finally(() => {
         this.briefing = null;
       });
@@ -196,7 +200,9 @@ export class NewsService {
         this.backgroundCollect(keys());
         this.lastCollection = now;
       }
-      if (now >= cutoff) this.scheduleBriefing(cutoff);
+      // Leave the configured inference timeout plus one worker tick before the 09:00 deadline.
+      // A late startup still records actual availability rather than backdating the report.
+      if (now >= cutoff - this.config.NEWS_MODEL_TIMEOUT_MS - 30000) this.scheduleBriefing(cutoff);
     };
     this.timer = setInterval(tick, 30000);
     tick();
