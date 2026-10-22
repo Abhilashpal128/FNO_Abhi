@@ -1,0 +1,7 @@
+-r requirements-archive.txt
+numpy>=2.2,<3
+scikit-learn>=1.6,<2
+lightgbm>=4.6,<5
+fastapi>=0.115,<1
+httpx>=0.28,<1
+python-dotenv>=1,<2
