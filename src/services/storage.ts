@@ -222,6 +222,8 @@ export class StorageHealthService {
         await this.store.deferRetention('market_candles', deferredIds, now + 86400000);
       }
     }
+    const incomplete = await this.store.find('retention_checkpoints', { status: 'INCOMPLETE' }, { limit: 1000 });
+    pending = Math.max(pending, incomplete.reduce((sum, checkpoint) => sum + checkpoint.sourceCount, 0));
     return { status: pending ? 'DEGRADED' : 'OK', checkedAt: now, armed, pending };
   }
 }

@@ -182,7 +182,8 @@ function replay(
         bars: rows,
         advanced: ablation.volume ? advanced : undefined,
         news: ablation.news
-          ? (dataset.news ?? []).filter((n) => n.publishedAt <= asOf && n.receivedAt <= asOf)
+          ? (dataset.news ?? []).filter((n) => n.publishedAt <= asOf && n.receivedAt <= asOf &&
+              (n.instrumentKeys.includes(underlying.id) || n.classification === 'POLICY'))
           : [],
         futureQuotes: ablation.volume ? dataset.futureQuotes?.filter((q) => q.sourceTs <= asOf && q.receivedAt <= asOf) : [],
         optionQuotes: ablation.volume ? quotes.filter((q) => q.sourceTs <= asOf && q.receivedAt <= asOf).slice(-12) : [],
