@@ -1,7 +1,7 @@
 import express, { type Request, type Response, type NextFunction } from 'express';
-import helmet from 'helmet';
+import * as helmet from 'helmet';
 import cors from 'cors';
-import rateLimit from 'express-rate-limit';
+import { rateLimit } from 'express-rate-limit';
 import { pinoHttp } from 'pino-http';
 import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
@@ -40,7 +40,7 @@ export function createApp(s: Services) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', s.config.TRUST_PROXY_HOPS);
-  app.use(helmet());
+  app.use(helmet.default());
   app.use(cors({ origin: s.config.CORS_ORIGINS, credentials: false }));
   app.use(express.json({ limit: '64kb' }));
   app.use(
