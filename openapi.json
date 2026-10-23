@@ -15,7 +15,9 @@
       "get": {
         "summary": "Latest derived volume features",
         "operationId": "get__market_features",
-        "tags": ["market"],
+        "tags": [
+          "market"
+        ],
         "parameters": [
           {
             "name": "instrumentKey",
@@ -49,7 +51,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -142,7 +147,9 @@
       "get": {
         "summary": "Compact five-minute sampled option observations, not executable OHLC",
         "operationId": "get__market_option_observations",
-        "tags": ["market"],
+        "tags": [
+          "market"
+        ],
         "parameters": [
           {
             "name": "instrumentKey",
@@ -176,7 +183,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -269,7 +279,9 @@
       "get": {
         "summary": "Versioned individual strategy decisions and rejection reasons",
         "operationId": "get__strategies_decisions",
-        "tags": ["strategies"],
+        "tags": [
+          "strategies"
+        ],
         "parameters": [
           {
             "name": "instrumentKey",
@@ -303,7 +315,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -396,7 +411,9 @@
       "get": {
         "summary": "Latest immutable source-grounded news briefing with cutoff and degraded state",
         "operationId": "get__news_briefings_latest",
-        "tags": ["news"],
+        "tags": [
+          "news"
+        ],
         "parameters": [],
         "security": [
           {
@@ -418,7 +435,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -511,7 +531,9 @@
       "get": {
         "summary": "Versioned news briefing history",
         "operationId": "get__news_briefings",
-        "tags": ["news"],
+        "tags": [
+          "news"
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -555,7 +577,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -648,7 +673,9 @@
       "get": {
         "summary": "Candidate target-before-stop evidence, distinct from paper execution",
         "operationId": "get__research_outcomes",
-        "tags": ["research"],
+        "tags": [
+          "research"
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -692,7 +719,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -785,7 +815,9 @@
       "get": {
         "summary": "Measured coverage, outcome precision and execution costs",
         "operationId": "get__research_quality",
-        "tags": ["research"],
+        "tags": [
+          "research"
+        ],
         "parameters": [],
         "security": [
           {
@@ -807,7 +839,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -900,7 +935,9 @@
       "get": {
         "summary": "Stored chronological validation reports; no automatic model promotion",
         "operationId": "get__models_validation",
-        "tags": ["models"],
+        "tags": [
+          "models"
+        ],
         "parameters": [],
         "security": [
           {
@@ -922,7 +959,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1015,7 +1055,9 @@
       "get": {
         "summary": "Observed feature distribution drift, null without sufficient samples",
         "operationId": "get__models_drift",
-        "tags": ["models"],
+        "tags": [
+          "models"
+        ],
         "parameters": [],
         "security": [
           {
@@ -1037,7 +1079,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1130,7 +1175,9 @@
       "post": {
         "summary": "Single-user login; short-lived bearer token",
         "operationId": "post__auth_login",
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "parameters": [],
         "security": [],
         "responses": {
@@ -1148,7 +1195,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1254,7 +1304,10 @@
                     "maxLength": 512
                   }
                 },
-                "required": ["username", "password"],
+                "required": [
+                  "username",
+                  "password"
+                ],
                 "additionalProperties": false
               }
             }
@@ -1266,7 +1319,9 @@
       "get": {
         "summary": "Authenticated account identity",
         "operationId": "get__auth_me",
-        "tags": ["auth"],
+        "tags": [
+          "auth"
+        ],
         "parameters": [],
         "security": [
           {
@@ -1288,7 +1343,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1381,7 +1439,9 @@
       "get": {
         "summary": "Session, underlying universe and latest quote metadata",
         "operationId": "get__market",
-        "tags": ["market"],
+        "tags": [
+          "market"
+        ],
         "parameters": [],
         "security": [
           {
@@ -1403,7 +1463,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1496,7 +1559,9 @@
       "get": {
         "summary": "Completed stored candles; bounded time range",
         "operationId": "get__market_candles",
-        "tags": ["market"],
+        "tags": [
+          "market"
+        ],
         "parameters": [
           {
             "name": "instrumentKey",
@@ -1570,7 +1635,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1663,7 +1731,9 @@
       "get": {
         "summary": "Same-time historical volume intelligence",
         "operationId": "get__market_volume",
-        "tags": ["market"],
+        "tags": [
+          "market"
+        ],
         "parameters": [
           {
             "name": "instrumentKey",
@@ -1697,7 +1767,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1790,7 +1863,9 @@
       "get": {
         "summary": "Listed contract metadata and latest collected quotes",
         "operationId": "get__market_option_chain",
-        "tags": ["market"],
+        "tags": [
+          "market"
+        ],
         "parameters": [
           {
             "name": "instrumentKey",
@@ -1833,7 +1908,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -1926,7 +2004,9 @@
       "get": {
         "summary": "Latest market regimes",
         "operationId": "get__market_regime",
-        "tags": ["market"],
+        "tags": [
+          "market"
+        ],
         "parameters": [],
         "security": [
           {
@@ -1948,7 +2028,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2041,7 +2124,9 @@
       "get": {
         "summary": "Collected news as known at server analysis clock",
         "operationId": "get__news",
-        "tags": ["news"],
+        "tags": [
+          "news"
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -2085,7 +2170,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2178,7 +2266,9 @@
       "get": {
         "summary": "Most recent evaluation including original 9:20 report reference",
         "operationId": "get__analysis_latest",
-        "tags": ["analysis"],
+        "tags": [
+          "analysis"
+        ],
         "parameters": [],
         "security": [
           {
@@ -2200,7 +2290,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2293,7 +2386,9 @@
       "get": {
         "summary": "Immutable evaluation history",
         "operationId": "get__analysis_history",
-        "tags": ["analysis"],
+        "tags": [
+          "analysis"
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -2337,7 +2432,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2430,7 +2528,9 @@
       "post": {
         "summary": "Evaluate current collected data without weakening risk gates",
         "operationId": "post__analysis_refresh",
-        "tags": ["analysis"],
+        "tags": [
+          "analysis"
+        ],
         "parameters": [],
         "security": [
           {
@@ -2452,7 +2552,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2558,7 +2661,9 @@
       "get": {
         "summary": "At most five original daily opportunities plus current status",
         "operationId": "get__opportunities",
-        "tags": ["opportunities"],
+        "tags": [
+          "opportunities"
+        ],
         "parameters": [],
         "security": [
           {
@@ -2580,7 +2685,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2673,7 +2781,9 @@
       "get": {
         "summary": "Immutable decision snapshot and latest status",
         "operationId": "get__opportunities__id_",
-        "tags": ["opportunities"],
+        "tags": [
+          "opportunities"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2705,7 +2815,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2798,7 +2911,9 @@
       "get": {
         "summary": "Append-only research lifecycle",
         "operationId": "get__opportunities__id__events",
-        "tags": ["opportunities"],
+        "tags": [
+          "opportunities"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -2830,7 +2945,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -2923,7 +3041,9 @@
       "get": {
         "summary": "Versioned strategy definitions and validation status",
         "operationId": "get__strategies",
-        "tags": ["strategies"],
+        "tags": [
+          "strategies"
+        ],
         "parameters": [],
         "security": [
           {
@@ -2945,7 +3065,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3038,7 +3161,9 @@
       "get": {
         "summary": "Simulated positions and fills",
         "operationId": "get__paper_trades",
-        "tags": ["paper-trades"],
+        "tags": [
+          "paper-trades"
+        ],
         "parameters": [],
         "security": [
           {
@@ -3060,7 +3185,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3151,7 +3279,9 @@
       "post": {
         "summary": "Explicit simulated entry; requires Idempotency-Key",
         "operationId": "post__paper_trades",
-        "tags": ["paper-trades"],
+        "tags": [
+          "paper-trades"
+        ],
         "parameters": [
           {
             "name": "Idempotency-Key",
@@ -3185,7 +3315,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3292,7 +3425,10 @@
                     "maximum": 100
                   }
                 },
-                "required": ["signalId", "lots"],
+                "required": [
+                  "signalId",
+                  "lots"
+                ],
                 "additionalProperties": false
               }
             }
@@ -3304,7 +3440,9 @@
       "post": {
         "summary": "Simulated exit at a fresh executable bid",
         "operationId": "post__paper_trades__id__close",
-        "tags": ["paper-trades"],
+        "tags": [
+          "paper-trades"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -3336,7 +3474,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3442,7 +3583,9 @@
       "get": {
         "summary": "Stored historical replay results",
         "operationId": "get__backtests",
-        "tags": ["backtests"],
+        "tags": [
+          "backtests"
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -3486,7 +3629,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3577,7 +3723,9 @@
       "post": {
         "summary": "Replay recorded point-in-time data; no fabricated expired quotes",
         "operationId": "post__backtests",
-        "tags": ["backtests"],
+        "tags": [
+          "backtests"
+        ],
         "parameters": [],
         "security": [
           {
@@ -3599,7 +3747,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3717,7 +3868,12 @@
                     "maximum": 9007199254740991
                   }
                 },
-                "required": ["underlyingKey", "contractKey", "from", "to"],
+                "required": [
+                  "underlyingKey",
+                  "contractKey",
+                  "from",
+                  "to"
+                ],
                 "additionalProperties": false
               }
             }
@@ -3729,7 +3885,9 @@
       "get": {
         "summary": "Replay metrics, trades and limitations",
         "operationId": "get__backtests__id_",
-        "tags": ["backtests"],
+        "tags": [
+          "backtests"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -3761,7 +3919,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3854,7 +4015,9 @@
       "get": {
         "summary": "Paper account, net outcomes and current marks",
         "operationId": "get__performance",
-        "tags": ["performance"],
+        "tags": [
+          "performance"
+        ],
         "parameters": [],
         "security": [
           {
@@ -3876,7 +4039,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -3969,7 +4135,9 @@
       "get": {
         "summary": "Risk settings; never returns environment secrets",
         "operationId": "get__settings",
-        "tags": ["settings"],
+        "tags": [
+          "settings"
+        ],
         "parameters": [],
         "security": [
           {
@@ -3991,7 +4159,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -4082,7 +4253,9 @@
       "patch": {
         "summary": "Validate and atomically update risk limits",
         "operationId": "patch__settings",
-        "tags": ["settings"],
+        "tags": [
+          "settings"
+        ],
         "parameters": [],
         "security": [
           {
@@ -4104,7 +4277,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -4239,7 +4415,9 @@
       "get": {
         "summary": "Database, feed, scheduler and data-quality health",
         "operationId": "get__system_health",
-        "tags": ["system"],
+        "tags": [
+          "system"
+        ],
         "parameters": [],
         "security": [
           {
@@ -4261,7 +4439,10 @@
                       "$ref": "#/components/schemas/Meta"
                     }
                   },
-                  "required": ["data", "meta"],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
                   "additionalProperties": false
                 }
               }
@@ -4405,7 +4586,11 @@
         "properties": {
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "serverTime": {
             "type": "string",
@@ -4419,7 +4604,12 @@
             "type": "boolean"
           }
         },
-        "required": ["mode", "serverTime", "analysisClock", "synthetic"],
+        "required": [
+          "mode",
+          "serverTime",
+          "analysisClock",
+          "synthetic"
+        ],
         "additionalProperties": false
       },
       "Error": {
@@ -4452,16 +4642,24 @@
                       "type": "string"
                     }
                   },
-                  "required": ["path", "message"],
+                  "required": [
+                    "path",
+                    "message"
+                  ],
                   "additionalProperties": false
                 }
               }
             },
-            "required": ["code", "message"],
+            "required": [
+              "code",
+              "message"
+            ],
             "additionalProperties": false
           }
         },
-        "required": ["error"],
+        "required": [
+          "error"
+        ],
         "additionalProperties": false
       },
       "Instrument": {
@@ -4478,14 +4676,23 @@
           },
           "kind": {
             "type": "string",
-            "enum": ["INDEX", "EQUITY", "FUT", "CE", "PE"]
+            "enum": [
+              "INDEX",
+              "EQUITY",
+              "FUT",
+              "CE",
+              "PE"
+            ]
           },
           "underlyingKey": {
             "type": "string"
           },
           "underlyingType": {
             "type": "string",
-            "enum": ["INDEX", "EQUITY"]
+            "enum": [
+              "INDEX",
+              "EQUITY"
+            ]
           },
           "expiry": {
             "anyOf": [
@@ -4523,7 +4730,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "sector": {
             "anyOf": [
@@ -4690,7 +4901,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "quality": {
             "type": "array",
@@ -4793,7 +5008,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           }
         },
         "required": [
@@ -4884,7 +5103,12 @@
           },
           "volumeTrend": {
             "type": "string",
-            "enum": ["EXPANDING", "DECLINING", "FLAT", "UNKNOWN"]
+            "enum": [
+              "EXPANDING",
+              "DECLINING",
+              "FLAT",
+              "UNKNOWN"
+            ]
           },
           "priceVolumeRelationship": {
             "type": "string"
@@ -4901,7 +5125,11 @@
           },
           "volumeConfirmationStatus": {
             "type": "string",
-            "enum": ["CONFIRMED", "UNCONFIRMED", "INSUFFICIENT_DATA"]
+            "enum": [
+              "CONFIRMED",
+              "UNCONFIRMED",
+              "INSUFFICIENT_DATA"
+            ]
           },
           "dataQualityFlags": {
             "type": "array",
@@ -4976,7 +5204,11 @@
                     "type": "number"
                   }
                 },
-                "required": ["macd", "signal", "histogram"],
+                "required": [
+                  "macd",
+                  "signal",
+                  "histogram"
+                ],
                 "additionalProperties": false
               },
               {
@@ -5019,7 +5251,11 @@
                     "type": "number"
                   }
                 },
-                "required": ["lower", "middle", "upper"],
+                "required": [
+                  "lower",
+                  "middle",
+                  "upper"
+                ],
                 "additionalProperties": false
               },
               {
@@ -5085,7 +5321,10 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["BULLISH", "BEARISH"]
+                "enum": [
+                  "BULLISH",
+                  "BEARISH"
+                ]
               },
               {
                 "type": "null"
@@ -5150,7 +5389,12 @@
           },
           "status": {
             "type": "string",
-            "enum": ["ELIGIBLE", "REJECTED", "INSUFFICIENT_DATA", "DATA_UNAVAILABLE"]
+            "enum": [
+              "ELIGIBLE",
+              "REJECTED",
+              "INSUFFICIENT_DATA",
+              "DATA_UNAVAILABLE"
+            ]
           }
         },
         "required": [
@@ -5225,6 +5469,13 @@
       "Opportunity": {
         "type": "object",
         "properties": {
+          "designation": {
+            "type": "string",
+            "enum": [
+              "INTRADAY",
+              "SWING"
+            ]
+          },
           "id": {
             "type": "string"
           },
@@ -5247,7 +5498,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "underlying": {
             "$ref": "#/components/schemas/Instrument"
@@ -5295,7 +5550,11 @@
                 ]
               }
             },
-            "required": ["asOf", "officialCount", "sentiment"],
+            "required": [
+              "asOf",
+              "officialCount",
+              "sentiment"
+            ],
             "additionalProperties": false
           },
           "volume": {
@@ -5334,7 +5593,12 @@
                 "type": "string"
               }
             },
-            "required": ["rvol", "rewardRisk", "spreadPct", "rankMethod"],
+            "required": [
+              "rvol",
+              "rewardRisk",
+              "spreadPct",
+              "rankMethod"
+            ],
             "additionalProperties": false
           },
           "probability": {
@@ -5367,7 +5631,9 @@
           },
           "riskStatus": {
             "type": "string",
-            "enum": ["ACCEPTED"]
+            "enum": [
+              "ACCEPTED"
+            ]
           },
           "snapshotHash": {
             "type": "string"
@@ -5434,15 +5700,28 @@
           },
           "kind": {
             "type": "string",
-            "enum": ["INITIAL", "REEVALUATION", "DEEP", "MANUAL"]
+            "enum": [
+              "INITIAL",
+              "REEVALUATION",
+              "DEEP",
+              "MANUAL"
+            ]
           },
           "status": {
             "type": "string",
-            "enum": ["OPPORTUNITIES", "NO_TRADE", "INSUFFICIENT_DATA"]
+            "enum": [
+              "OPPORTUNITIES",
+              "NO_TRADE",
+              "INSUFFICIENT_DATA"
+            ]
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "signalIds": {
             "type": "array",
@@ -5481,10 +5760,16 @@
                 },
                 "riskStatus": {
                   "type": "string",
-                  "enum": ["ACCEPTED"]
+                  "enum": [
+                    "ACCEPTED"
+                  ]
                 }
               },
-              "required": ["id", "status", "riskStatus"],
+              "required": [
+                "id",
+                "status",
+                "riskStatus"
+              ],
               "additionalProperties": false
             }
           },
@@ -5503,7 +5788,10 @@
                   }
                 }
               },
-              "required": ["instrumentKey", "reasons"],
+              "required": [
+                "instrumentKey",
+                "reasons"
+              ],
               "additionalProperties": false
             }
           },
@@ -5543,10 +5831,20 @@
               },
               "status": {
                 "type": "string",
-                "enum": ["LIVE", "DELAYED", "DEMO", "UNAVAILABLE"]
+                "enum": [
+                  "LIVE",
+                  "DELAYED",
+                  "DEMO",
+                  "UNAVAILABLE"
+                ]
               }
             },
-            "required": ["newestQuoteAt", "oldestRequiredQuoteAt", "maxAgeMs", "status"],
+            "required": [
+              "newestQuoteAt",
+              "oldestRequiredQuoteAt",
+              "maxAgeMs",
+              "status"
+            ],
             "additionalProperties": false
           },
           "nextScheduledAt": {
@@ -5628,7 +5926,14 @@
             ]
           }
         },
-        "required": ["id", "signalId", "timestamp", "status", "reason", "quoteId"],
+        "required": [
+          "id",
+          "signalId",
+          "timestamp",
+          "status",
+          "reason",
+          "quoteId"
+        ],
         "additionalProperties": false
       },
       "PaperTrade": {
@@ -5682,7 +5987,10 @@
           },
           "status": {
             "type": "string",
-            "enum": ["OPEN", "CLOSED"]
+            "enum": [
+              "OPEN",
+              "CLOSED"
+            ]
           },
           "exit": {
             "anyOf": [
@@ -5737,7 +6045,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "requestKey": {
             "type": "string"
@@ -5813,7 +6125,14 @@
             ]
           }
         },
-        "required": ["trades", "netPnl", "winRate", "expectancy", "maxDrawdown", "profitFactor"],
+        "required": [
+          "trades",
+          "netPnl",
+          "winRate",
+          "expectancy",
+          "maxDrawdown",
+          "profitFactor"
+        ],
         "additionalProperties": false
       },
       "Account": {
@@ -5839,7 +6158,14 @@
             "type": "integer"
           }
         },
-        "required": ["id", "capital", "cash", "realizedPnl", "updatedAt", "revision"],
+        "required": [
+          "id",
+          "capital",
+          "cash",
+          "realizedPnl",
+          "updatedAt",
+          "revision"
+        ],
         "additionalProperties": false
       },
       "RiskSettings": {
@@ -5916,7 +6242,16 @@
             "description": "Unix epoch milliseconds, UTC"
           }
         },
-        "required": ["id", "day", "open", "close", "trading", "verified", "source", "receivedAt"],
+        "required": [
+          "id",
+          "day",
+          "open",
+          "close",
+          "trading",
+          "verified",
+          "source",
+          "receivedAt"
+        ],
         "additionalProperties": false
       },
       "NewsItem": {
@@ -5951,13 +6286,22 @@
           },
           "classification": {
             "type": "string",
-            "enum": ["EARNINGS", "POLICY", "CORPORATE", "GENERAL"]
+            "enum": [
+              "EARNINGS",
+              "POLICY",
+              "CORPORATE",
+              "GENERAL"
+            ]
           },
           "sentiment": {
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["positive", "negative", "neutral"]
+                "enum": [
+                  "positive",
+                  "negative",
+                  "neutral"
+                ]
               },
               {
                 "type": "null"
@@ -5979,7 +6323,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "summary": {
             "type": "string"
@@ -6022,7 +6370,10 @@
           },
           "status": {
             "type": "string",
-            "enum": ["COMPLETE", "INSUFFICIENT_DATA"]
+            "enum": [
+              "COMPLETE",
+              "INSUFFICIENT_DATA"
+            ]
           },
           "from": {
             "type": "integer",
@@ -6034,7 +6385,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "strategyVersion": {
             "type": "string"
@@ -6131,7 +6486,11 @@
                 "$ref": "#/components/schemas/Metrics"
               }
             },
-            "required": ["withoutVolume", "withoutNews", "withoutVolumeOrNews"],
+            "required": [
+              "withoutVolume",
+              "withoutNews",
+              "withoutVolumeOrNews"
+            ],
             "additionalProperties": false
           },
           "evaluation": {
@@ -6231,13 +6590,19 @@
           },
           "tokenType": {
             "type": "string",
-            "enum": ["Bearer"]
+            "enum": [
+              "Bearer"
+            ]
           },
           "expiresIn": {
             "type": "integer"
           }
         },
-        "required": ["accessToken", "tokenType", "expiresIn"],
+        "required": [
+          "accessToken",
+          "tokenType",
+          "expiresIn"
+        ],
         "additionalProperties": false
       },
       "Identity": {
@@ -6250,7 +6615,10 @@
             "type": "string"
           }
         },
-        "required": ["username", "scope"],
+        "required": [
+          "username",
+          "scope"
+        ],
         "additionalProperties": false
       },
       "Feed": {
@@ -6274,7 +6642,11 @@
             "type": "integer"
           }
         },
-        "required": ["connected", "lastMessageAt", "subscriptions"],
+        "required": [
+          "connected",
+          "lastMessageAt",
+          "subscriptions"
+        ],
         "additionalProperties": false
       },
       "Version": {
@@ -6301,7 +6673,14 @@
             "additionalProperties": true
           }
         },
-        "required": ["id", "name", "version", "createdAt", "validated", "details"],
+        "required": [
+          "id",
+          "name",
+          "version",
+          "createdAt",
+          "validated",
+          "details"
+        ],
         "additionalProperties": false
       },
       "AdvancedVolume": {
@@ -6405,15 +6784,30 @@
           },
           "divergence": {
             "type": "string",
-            "enum": ["BULLISH", "BEARISH", "NONE", "UNAVAILABLE"]
+            "enum": [
+              "BULLISH",
+              "BEARISH",
+              "NONE",
+              "UNAVAILABLE"
+            ]
           },
           "breakout": {
             "type": "string",
-            "enum": ["UP", "DOWN", "NONE", "UNAVAILABLE"]
+            "enum": [
+              "UP",
+              "DOWN",
+              "NONE",
+              "UNAVAILABLE"
+            ]
           },
           "falseBreakout": {
             "type": "string",
-            "enum": ["UPPER_REJECTED", "LOWER_REJECTED", "NONE", "UNAVAILABLE"]
+            "enum": [
+              "UPPER_REJECTED",
+              "LOWER_REJECTED",
+              "NONE",
+              "UNAVAILABLE"
+            ]
           },
           "participation": {
             "type": "string",
@@ -6491,13 +6885,23 @@
               },
               "mode": {
                 "type": "string",
-                "enum": ["live", "historical", "demo"]
+                "enum": [
+                  "live",
+                  "historical",
+                  "demo"
+                ]
               },
               "advanced": {
                 "$ref": "#/components/schemas/AdvancedVolume"
               }
             },
-            "required": ["id", "instrumentKey", "asOf", "mode", "advanced"],
+            "required": [
+              "id",
+              "instrumentKey",
+              "asOf",
+              "mode",
+              "advanced"
+            ],
             "additionalProperties": false
           },
           {
@@ -6541,7 +6945,14 @@
               }
             }
           },
-          "required": ["id", "runId", "instrumentKey", "asOf", "regime", "decisions"],
+          "required": [
+            "id",
+            "runId",
+            "instrumentKey",
+            "asOf",
+            "regime",
+            "decisions"
+          ],
           "additionalProperties": false
         }
       },
@@ -6568,7 +6979,11 @@
           },
           "mode": {
             "type": "string",
-            "enum": ["live", "historical", "demo"]
+            "enum": [
+              "live",
+              "historical",
+              "demo"
+            ]
           },
           "samples": {
             "type": "integer"
@@ -6739,7 +7154,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["READY", "DEGRADED", "UNAVAILABLE"]
+            "enum": [
+              "READY",
+              "DEGRADED",
+              "UNAVAILABLE"
+            ]
           },
           "model": {
             "anyOf": [
@@ -6784,9 +7203,23 @@
                 },
                 "official": {
                   "type": "boolean"
+                },
+                "instrumentKeys": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               },
-              "required": ["id", "headline", "summary", "url", "publishedAt", "receivedAt", "official"],
+              "required": [
+                "id",
+                "headline",
+                "summary",
+                "url",
+                "publishedAt",
+                "receivedAt",
+                "official"
+              ],
               "additionalProperties": false
             }
           },
@@ -6817,7 +7250,12 @@
                   }
                 }
               },
-              "required": ["id", "sourceIds", "officialSourceIds", "instrumentKeys"],
+              "required": [
+                "id",
+                "sourceIds",
+                "officialSourceIds",
+                "instrumentKeys"
+              ],
               "additionalProperties": false
             }
           },
@@ -6850,7 +7288,10 @@
                         "type": "string"
                       }
                     },
-                    "required": ["sourceId", "quote"],
+                    "required": [
+                      "sourceId",
+                      "quote"
+                    ],
                     "additionalProperties": false
                   }
                 },
@@ -6862,10 +7303,20 @@
                 },
                 "verification": {
                   "type": "string",
-                  "enum": ["OFFICIAL_SOURCE", "ATTRIBUTED_UNVERIFIED"]
+                  "enum": [
+                    "OFFICIAL_SOURCE",
+                    "ATTRIBUTED_UNVERIFIED"
+                  ]
                 }
               },
-              "required": ["category", "summary", "sourceIds", "evidence", "instrumentKeys", "verification"],
+              "required": [
+                "category",
+                "summary",
+                "sourceIds",
+                "evidence",
+                "instrumentKeys",
+                "verification"
+              ],
               "additionalProperties": false
             }
           },
@@ -6874,6 +7325,20 @@
             "items": {
               "type": "string"
             }
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "SOURCE_DIGEST",
+              "GROUNDED_MODEL"
+            ]
+          },
+          "aiStatus": {
+            "type": "string",
+            "enum": [
+              "ENABLED",
+              "DISABLED"
+            ]
           }
         },
         "required": [
@@ -7110,7 +7575,10 @@
                   ]
                 }
               },
-              "required": ["count", "targetBeforeStopAccuracy"],
+              "required": [
+                "count",
+                "targetBeforeStopAccuracy"
+              ],
               "additionalProperties": false
             }
           },
@@ -7182,7 +7650,13 @@
               "additionalProperties": true
             }
           },
-          "required": ["id", "createdAt", "modelVersion", "validated", "report"],
+          "required": [
+            "id",
+            "createdAt",
+            "modelVersion",
+            "validated",
+            "report"
+          ],
           "additionalProperties": false
         }
       },
@@ -7282,7 +7756,13 @@
           },
           "level": {
             "type": "string",
-            "enum": ["NORMAL", "WARNING", "REDUCED", "CRITICAL", "UNAVAILABLE"]
+            "enum": [
+              "NORMAL",
+              "WARNING",
+              "REDUCED",
+              "CRITICAL",
+              "UNAVAILABLE"
+            ]
           },
           "optionalSnapshotStride": {
             "type": "integer"
@@ -7292,7 +7772,12 @@
             "properties": {
               "status": {
                 "type": "string",
-                "enum": ["NOT_RUN", "OK", "DEGRADED", "FAILED"]
+                "enum": [
+                  "NOT_RUN",
+                  "OK",
+                  "DEGRADED",
+                  "FAILED"
+                ]
               },
               "checkedAt": {
                 "anyOf": [
@@ -7312,7 +7797,12 @@
                 "type": "integer"
               }
             },
-            "required": ["status", "checkedAt", "armed", "pending"],
+            "required": [
+              "status",
+              "checkedAt",
+              "armed",
+              "pending"
+            ],
             "additionalProperties": false
           },
           "measured": {
@@ -7339,7 +7829,13 @@
                   "type": "number"
                 }
               },
-              "required": ["name", "count", "dataBytes", "storageBytes", "indexBytes"],
+              "required": [
+                "name",
+                "count",
+                "dataBytes",
+                "storageBytes",
+                "indexBytes"
+              ],
               "additionalProperties": false
             }
           },
@@ -7474,7 +7970,14 @@
                       ]
                     }
                   },
-                  "required": ["interval", "volume", "rvol", "baselineSamples", "start", "end"],
+                  "required": [
+                    "interval",
+                    "volume",
+                    "rvol",
+                    "baselineSamples",
+                    "start",
+                    "end"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -7516,7 +8019,12 @@
                     "type": "integer"
                   }
                 },
-                "required": ["dayStart", "volume", "rvol", "samples"],
+                "required": [
+                  "dayStart",
+                  "volume",
+                  "rvol",
+                  "samples"
+                ],
                 "additionalProperties": false
               },
               "sessionVwap": {
@@ -7568,7 +8076,12 @@
             "additionalProperties": false
           }
         },
-        "required": ["advanced", "features", "volumeInstrumentKey", "windows"],
+        "required": [
+          "advanced",
+          "features",
+          "volumeInstrumentKey",
+          "windows"
+        ],
         "additionalProperties": false
       },
       "Analysis": {
@@ -7600,7 +8113,10 @@
                 ]
               }
             },
-            "required": ["latest", "initial"],
+            "required": [
+              "latest",
+              "initial"
+            ],
             "additionalProperties": false
           }
         ]
@@ -7672,7 +8188,11 @@
                 "type": "boolean"
               }
             },
-            "required": ["risk", "costAssumptionsVerified", "environmentKillSwitch"],
+            "required": [
+              "risk",
+              "costAssumptionsVerified",
+              "environmentKillSwitch"
+            ],
             "additionalProperties": false
           }
         ]
@@ -7680,6 +8200,95 @@
       "Performance": {
         "type": "object",
         "properties": {
+          "daily": {
+            "type": "object",
+            "properties": {
+              "day": {
+                "type": "string"
+              },
+              "timezone": {
+                "type": "string"
+              },
+              "trades": {
+                "type": "integer"
+              },
+              "netPnl": {
+                "type": "number"
+              },
+              "winRate": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "expectancy": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "maxDrawdown": {
+                "type": "number"
+              },
+              "profitFactor": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "wins": {
+                "type": "integer"
+              },
+              "losses": {
+                "type": "integer"
+              },
+              "breakeven": {
+                "type": "integer"
+              },
+              "fees": {
+                "type": "number"
+              },
+              "grossPnl": {
+                "type": "number"
+              },
+              "costsVerified": {
+                "type": "boolean"
+              },
+              "methodology": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "day",
+              "timezone",
+              "trades",
+              "netPnl",
+              "winRate",
+              "expectancy",
+              "maxDrawdown",
+              "profitFactor",
+              "wins",
+              "losses",
+              "breakeven",
+              "fees",
+              "grossPnl",
+              "costsVerified",
+              "methodology"
+            ],
+            "additionalProperties": false
+          },
           "account": {
             "anyOf": [
               {
@@ -7746,7 +8355,10 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["OPEN", "CLOSED"]
+                  "enum": [
+                    "OPEN",
+                    "CLOSED"
+                  ]
                 },
                 "exit": {
                   "anyOf": [
@@ -7801,7 +8413,11 @@
                 },
                 "mode": {
                   "type": "string",
-                  "enum": ["live", "historical", "demo"]
+                  "enum": [
+                    "live",
+                    "historical",
+                    "demo"
+                  ]
                 },
                 "requestKey": {
                   "type": "string"
@@ -7818,7 +8434,10 @@
                 },
                 "markStatus": {
                   "type": "string",
-                  "enum": ["FRESH", "UNAVAILABLE"]
+                  "enum": [
+                    "FRESH",
+                    "UNAVAILABLE"
+                  ]
                 }
               },
               "required": [
@@ -7882,7 +8501,14 @@
             "additionalProperties": false
           }
         },
-        "required": ["account", "metrics", "open", "closed", "validation"],
+        "required": [
+          "daily",
+          "account",
+          "metrics",
+          "open",
+          "closed",
+          "validation"
+        ],
         "additionalProperties": false
       },
       "Regimes": {
@@ -7916,10 +8542,21 @@
             },
             "mode": {
               "type": "string",
-              "enum": ["live", "historical", "demo"]
+              "enum": [
+                "live",
+                "historical",
+                "demo"
+              ]
             }
           },
-          "required": ["id", "instrumentKey", "asOf", "regime", "technical", "mode"],
+          "required": [
+            "id",
+            "instrumentKey",
+            "asOf",
+            "regime",
+            "technical",
+            "mode"
+          ],
           "additionalProperties": false
         }
       },
@@ -8083,7 +8720,11 @@
                 },
                 "mode": {
                   "type": "string",
-                  "enum": ["live", "historical", "demo"]
+                  "enum": [
+                    "live",
+                    "historical",
+                    "demo"
+                  ]
                 },
                 "quality": {
                   "type": "array",
@@ -8132,7 +8773,13 @@
             ]
           }
         },
-        "required": ["session", "underlyings", "volumeProxies", "quotes", "feed"],
+        "required": [
+          "session",
+          "underlyings",
+          "volumeProxies",
+          "quotes",
+          "feed"
+        ],
         "additionalProperties": false
       },
       "OptionChain": {
@@ -8248,7 +8895,11 @@
                   ]
                 }
               },
-              "required": ["contract", "quote", "derivatives"],
+              "required": [
+                "contract",
+                "quote",
+                "derivatives"
+              ],
               "additionalProperties": false
             }
           },
@@ -8279,7 +8930,11 @@
                 "type": "string"
               }
             },
-            "required": ["oiPcr", "volumePcr", "methodology"],
+            "required": [
+              "oiPcr",
+              "volumePcr",
+              "methodology"
+            ],
             "additionalProperties": false
           },
           "pcrExpiry": {
@@ -8299,12 +8954,88 @@
             }
           }
         },
-        "required": ["contracts", "pcr", "pcrExpiry", "limitations"],
+        "required": [
+          "contracts",
+          "pcr",
+          "pcrExpiry",
+          "limitations"
+        ],
         "additionalProperties": false
       },
       "Health": {
         "type": "object",
         "properties": {
+          "runtime": {
+            "type": "string",
+            "enum": [
+              "persistent",
+              "vercel"
+            ]
+          },
+          "ai": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ENABLED",
+                  "DISABLED"
+                ]
+              },
+              "qwen": {
+                "type": "string",
+                "enum": [
+                  "ENABLED",
+                  "DISABLED"
+                ]
+              },
+              "finbert": {
+                "type": "string",
+                "enum": [
+                  "ENABLED",
+                  "DISABLED"
+                ]
+              },
+              "lightgbm": {
+                "type": "string",
+                "enum": [
+                  "ENABLED",
+                  "DISABLED"
+                ]
+              },
+              "groq": {
+                "type": "string",
+                "enum": [
+                  "ENABLED",
+                  "DISABLED"
+                ]
+              },
+              "huggingFaceApi": {
+                "type": "string",
+                "enum": [
+                  "ENABLED",
+                  "DISABLED"
+                ]
+              },
+              "openRouter": {
+                "type": "string",
+                "enum": [
+                  "ENABLED",
+                  "DISABLED"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "qwen",
+              "finbert",
+              "lightgbm",
+              "groq",
+              "huggingFaceApi",
+              "openRouter"
+            ],
+            "additionalProperties": false
+          },
           "storage": {
             "anyOf": [
               {
@@ -8341,7 +9072,12 @@
                 },
                 "status": {
                   "type": "string",
-                  "enum": ["OK", "DEGRADED", "UNAVAILABLE"]
+                  "enum": [
+                    "OK",
+                    "DEGRADED",
+                    "UNAVAILABLE",
+                    "DISABLED"
+                  ]
                 },
                 "checkedAt": {
                   "type": "integer",
@@ -8354,7 +9090,12 @@
                   }
                 }
               },
-              "required": ["id", "status", "checkedAt", "details"],
+              "required": [
+                "id",
+                "status",
+                "checkedAt",
+                "details"
+              ],
               "additionalProperties": false
             }
           },
@@ -8376,6 +9117,8 @@
           }
         },
         "required": [
+          "runtime",
+          "ai",
           "storage",
           "database",
           "persistent",

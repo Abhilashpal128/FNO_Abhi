@@ -129,17 +129,23 @@ export class NewsService {
     }
     await this.store.put('system_health', {
       id: 'news-models',
-      status: !this.config.AI_ENABLED || (!this.config.FINBERT_ENABLED && !this.config.QWEN_ENABLED)
-        ? 'DISABLED' : selected.some((n) => n.sentiment !== null) ? 'OK' : 'DEGRADED',
+      status:
+        !this.config.AI_ENABLED || (!this.config.FINBERT_ENABLED && !this.config.QWEN_ENABLED)
+          ? 'DISABLED'
+          : selected.some((n) => n.sentiment !== null)
+            ? 'OK'
+            : 'DEGRADED',
       checkedAt: Date.now(),
-      details: !this.config.AI_ENABLED ? ['AI_DISABLED; source news collection remains active'] : [
-        ...(!sentimentUrlConfigured(this.config)
-          ? ['FINBERT_NOT_CONFIGURED']
-          : selected.some((n) => n.sentiment === null)
-            ? ['FINBERT_PARTIALLY_UNAVAILABLE']
-            : []),
-        ...(!this.config.OLLAMA_BASE_URL ? ['OLLAMA_NOT_CONFIGURED'] : []),
-      ],
+      details: !this.config.AI_ENABLED
+        ? ['AI_DISABLED; source news collection remains active']
+        : [
+            ...(!sentimentUrlConfigured(this.config)
+              ? ['FINBERT_NOT_CONFIGURED']
+              : selected.some((n) => n.sentiment === null)
+                ? ['FINBERT_PARTIALLY_UNAVAILABLE']
+                : []),
+            ...(!this.config.OLLAMA_BASE_URL ? ['OLLAMA_NOT_CONFIGURED'] : []),
+          ],
     });
   }
   backgroundCollect(keys: string[]) {
@@ -205,7 +211,8 @@ export class NewsService {
       }
       // Leave the configured inference timeout plus one worker tick before the 09:00 deadline.
       // A late startup still records actual availability rather than backdating the report.
-      const lead = this.config.AI_ENABLED && this.config.QWEN_ENABLED ? this.config.NEWS_MODEL_TIMEOUT_MS + 30000 : 0;
+      const lead =
+        this.config.AI_ENABLED && this.config.QWEN_ENABLED ? this.config.NEWS_MODEL_TIMEOUT_MS + 30000 : 0;
       if (now >= cutoff - lead) this.scheduleBriefing(cutoff);
     };
     this.timer = setInterval(tick, 30000);
@@ -236,7 +243,11 @@ export class NewsService {
         }),
       ),
     });
-    const file = schema.parse(JSON.parse(this.config.EVENT_CALENDAR_JSON || await readFile(this.config.EVENT_CALENDAR_PATH, 'utf8')));
+    const file = schema.parse(
+      JSON.parse(
+        this.config.EVENT_CALENDAR_JSON || (await readFile(this.config.EVENT_CALENDAR_PATH, 'utf8')),
+      ),
+    );
     const today = dayKey(now);
     if (file.validFrom > today || file.validUntil < today) return;
     const records: MarketEvent[] = [];
@@ -275,8 +286,13 @@ export class NewsService {
         { sort: { publishedAt: -1 }, limit: 500 },
       ),
       asOf,
-    ).filter((n) => n.instrumentKeys.includes(key) || n.classification === 'POLICY')
-      .map((n) => this.config.AI_ENABLED && this.config.FINBERT_ENABLED ? n : { ...n, sentiment: null, sentimentMethod: null });
+    )
+      .filter((n) => n.instrumentKeys.includes(key) || n.classification === 'POLICY')
+      .map((n) =>
+        this.config.AI_ENABLED && this.config.FINBERT_ENABLED
+          ? n
+          : { ...n, sentiment: null, sentimentMethod: null },
+      );
     const version = (
       await this.store.find(
         'event_calendar_versions',

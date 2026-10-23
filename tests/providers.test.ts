@@ -11,10 +11,19 @@ const config = configSchema.parse({
 });
 describe('verified Upstox wire adapters', () => {
   it('accepts actual V3 index null volume/OI without fabricating zero participation', () => {
-    const quote = normalizeRestQuote({ instrument_token: 'NSE_INDEX|Nifty 50', last_price: 25000,
-      timestamp: new Date(DEMO_NOW).toISOString(), last_trade_time: String(DEMO_NOW - 60000),
-      volume: null, oi: null, previous_oi: null, depth: null,
-    }, DEMO_NOW);
+    const quote = normalizeRestQuote(
+      {
+        instrument_token: 'NSE_INDEX|Nifty 50',
+        last_price: 25000,
+        timestamp: new Date(DEMO_NOW).toISOString(),
+        last_trade_time: String(DEMO_NOW - 60000),
+        volume: null,
+        oi: null,
+        previous_oi: null,
+        depth: null,
+      },
+      DEMO_NOW,
+    );
     expect(quote.cumulativeVolume).toBeNull();
     expect(quote.oi).toBeNull();
     expect(quote.previousOi).toBeNull();

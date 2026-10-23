@@ -2,6 +2,10 @@
 
 Base path: `/api/v1`. JSON request/response bodies, bearer authentication except login, and a single configured owner account. The authoritative machine-readable contract is [openapi.json](openapi.json), regenerated with `npm run docs` from the route catalog, Zod requests and response schemas.
 
+The Vercel entry preserves these paths and envelopes. `/healthz` and authenticated `/system/health` expose AI switch status (`DISABLED` by default); system health identifies the runtime. `/performance` includes `daily` completed-paper-trade metrics by IST exit date. New opportunities carry `designation: INTRADAY`; source-only briefings identify `method: SOURCE_DIGEST` and retain related instruments. Existing saved snapshots remain unchanged. See [Vercel request behavior and deployment](docs/VERCEL_DEPLOYMENT.md) for collection triggers and runtime limits.
+
+The Vercel entry preserves these paths and envelopes. `/healthz` and authenticated `/system/health` expose AI switch status (`DISABLED` by default); system health identifies the runtime. `/performance` includes `daily` completed-paper-trade metrics by IST exit date. New opportunities carry `designation: INTRADAY`; source-only briefings identify `method: SOURCE_DIGEST` and retain related instruments. Existing saved snapshots remain unchanged. See [Vercel request behavior and deployment](docs/VERCEL_DEPLOYMENT.md) for collection triggers and runtime limits.
+
 Success envelope:
 
 ```json
@@ -21,7 +25,13 @@ Success envelope:
 Error envelope:
 
 ```json
-{ "error": { "code": "RISK_REJECTED", "message": "RISK_REJECTED", "reasons": ["TRADE_RISK_BUDGET"] } }
+{
+  "error": {
+    "code": "RISK_REJECTED",
+    "message": "RISK_REJECTED",
+    "reasons": ["TRADE_RISK_BUDGET"]
+  }
+}
 ```
 
 Validation errors include field paths and messages, without echoing submitted values or credentials. Status codes: 400 validation, 401 authentication, 404 missing record, 409 rejected/conflicting operation or no fill, 413 oversized body, 422 unavailable replay mapping/range, 429 rate limit, 500 internal failure. `/readyz` may return 503 for database unavailability. Bodies are capped at 64 KB.

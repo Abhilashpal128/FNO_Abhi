@@ -260,7 +260,8 @@ export class PaperService {
         fees: dailyClosed.reduce((sum, t) => sum + t.entryFee + (t.exitFee ?? 0), 0),
         grossPnl: dailyClosed.reduce((sum, t) => sum + (t.exit! - t.entry) * t.quantity, 0),
         costsVerified: this.config.COSTS_VERIFIED,
-        methodology: 'Completed paper trades by IST exit date; net P&L includes simulated fees and execution slippage; raw signals excluded',
+        methodology:
+          'Completed paper trades by IST exit date; net P&L includes simulated fees and execution slippage; raw signals excluded',
       },
       open,
       closed,

@@ -662,10 +662,16 @@ Object.assign(definitions, {
   },
   Performance: obj({
     daily: obj({
-      day: str, timezone: str,
+      day: str,
+      timezone: str,
       ...(definitions.Metrics!.properties as Record<string, J>),
-      wins: integer, losses: integer, breakeven: integer, fees: num, grossPnl: num,
-      costsVerified: bool, methodology: str,
+      wins: integer,
+      losses: integer,
+      breakeven: integer,
+      fees: num,
+      grossPnl: num,
+      costsVerified: bool,
+      methodology: str,
     }),
     account: nullable(ref('Account')),
     metrics: ref('Metrics'),
@@ -720,7 +726,14 @@ Object.assign(definitions, {
   }),
   Health: obj({
     runtime: enumeration(['persistent', 'vercel']),
-    ai: obj(Object.fromEntries(['status', 'qwen', 'finbert', 'lightgbm', 'groq', 'huggingFaceApi', 'openRouter'].map(k => [k, enumeration(['ENABLED', 'DISABLED'])]))),
+    ai: obj(
+      Object.fromEntries(
+        ['status', 'qwen', 'finbert', 'lightgbm', 'groq', 'huggingFaceApi', 'openRouter'].map((k) => [
+          k,
+          enumeration(['ENABLED', 'DISABLED']),
+        ]),
+      ),
+    ),
     storage: nullable(ref('StorageReport')),
     database: bool,
     persistent: bool,
@@ -743,7 +756,8 @@ Object.assign(definitions.StrategyDecision!.properties as J, {
 });
 Object.assign(definitions.NewsItem!.properties as J, { summary: str, sectors: arr(str), clusterId: str });
 Object.assign(definitions.NewsBriefing!.properties as J, {
-  method: enumeration(['SOURCE_DIGEST', 'GROUNDED_MODEL']), aiStatus: enumeration(['ENABLED', 'DISABLED']),
+  method: enumeration(['SOURCE_DIGEST', 'GROUNDED_MODEL']),
+  aiStatus: enumeration(['ENABLED', 'DISABLED']),
 });
 Object.assign((((definitions.NewsBriefing!.properties as J).sources as J).items as J).properties as J, {
   instrumentKeys: arr(str),

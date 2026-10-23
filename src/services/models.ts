@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import type { Store } from '../db/store.js';
 import type { Config } from '../config.js';
-export function aiStatus(config: Pick<Config, 'AI_ENABLED' | 'QWEN_ENABLED' | 'FINBERT_ENABLED' | 'LIGHTGBM_ENABLED'>) {
+export function aiStatus(
+  config: Pick<Config, 'AI_ENABLED' | 'QWEN_ENABLED' | 'FINBERT_ENABLED' | 'LIGHTGBM_ENABLED'>,
+) {
   const enabled = config.AI_ENABLED;
   return {
     status: enabled ? 'ENABLED' : 'DISABLED',
@@ -18,7 +20,10 @@ export class ValidatedModelService {
   constructor(
     private store: Store,
     private url: string,
-    private flags: Pick<Config, 'AI_ENABLED' | 'LIGHTGBM_ENABLED'> = { AI_ENABLED: false, LIGHTGBM_ENABLED: false },
+    private flags: Pick<Config, 'AI_ENABLED' | 'LIGHTGBM_ENABLED'> = {
+      AI_ENABLED: false,
+      LIGHTGBM_ENABLED: false,
+    },
   ) {}
   async predict(
     modelId: string,

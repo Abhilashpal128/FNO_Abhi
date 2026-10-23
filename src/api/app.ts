@@ -24,7 +24,7 @@ import { ResearchQualityService } from '../services/quality.js';
 import { advancedVolume } from '../engines/advanced-volume.js';
 import { aiStatus } from '../services/models.js';
 export interface Services {
-  beforeRequest?: (path: string, method: string) => Promise<void>;
+  beforeRequest?: (path: string, method: string, query: unknown) => Promise<void>;
   runtime?: 'persistent' | 'vercel';
   storage?: StorageHealthService;
   quality?: ResearchQualityService;
@@ -63,7 +63,12 @@ export function createApp(s: Services) {
     });
   app.use(limiter(60000, 120));
   app.get('/healthz', (_req, res) =>
-    res.json({ status: 'OK', service: 'stockss-intelligence', mode: s.config.DATA_MODE, ai: aiStatus(s.config) }),
+    res.json({
+      status: 'OK',
+      service: 'stockss-intelligence',
+      mode: s.config.DATA_MODE,
+      ai: aiStatus(s.config),
+    }),
   );
   app.get('/readyz', async (_req, res) => {
     const db = await s.store.healthy();
@@ -107,7 +112,7 @@ export function createApp(s: Services) {
     respond(res, { username: s.config.APP_USERNAME, scope: 'research:owner' }),
   );
   router.use(async (req, _res, next) => {
-    await s.beforeRequest?.(req.path, req.method);
+    await s.beforeRequest?.(req.path, req.method, req.query);
     next();
   });
   router.get('/openapi.json', (_req, res) => res.json(openapi));

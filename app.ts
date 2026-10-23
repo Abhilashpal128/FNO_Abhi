@@ -11,7 +11,11 @@ function application() {
     const config = loadConfig({ ...process.env, NODE_ENV: 'production', SCHEDULER_ENABLED: 'false' });
     const runtime = await createRuntime(config);
     const data = new RequestDataService(runtime);
-    return createApp({ ...runtime, runtime: 'vercel', beforeRequest: (path, method) => data.refresh(path, method) });
+    return createApp({
+      ...runtime,
+      runtime: 'vercel',
+      beforeRequest: (path, method, query) => data.refresh(path, method, query),
+    });
   })().catch(() => {
     initialized = undefined;
     throw new Error('Backend initialization unavailable');
@@ -21,9 +25,17 @@ function application() {
 const app = express();
 app.disable('x-powered-by');
 app.use(async (req, res) => {
-  try { (await application())(req, res); }
-  catch {
-    res.status(503).json({ error: { code: 'BACKEND_UNAVAILABLE', message: 'Check required environment variables and MongoDB connectivity' } });
+  try {
+    (await application())(req, res);
+  } catch {
+    res
+      .status(503)
+      .json({
+        error: {
+          code: 'BACKEND_UNAVAILABLE',
+          message: 'Check required environment variables and MongoDB connectivity',
+        },
+      });
   }
 });
 export default app;

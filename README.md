@@ -2,6 +2,10 @@
 
 A standalone Node.js / Express / TypeScript backend for market-data collection, volume-first research, paper trading and historical replay. MongoDB is the only persistent database. There is no broker order submission code.
 
+**Vercel deployment:** follow [the GitHub import, environment and verification guide](docs/VERCEL_DEPLOYMENT.md). The root `app.ts` exports the API for Vercel; `vercel.json` configures the Express framework, Node 24 build and request duration. All model execution defaults to **DISABLED** using `AI_ENABLED`, `QWEN_ENABLED`, `FINBERT_ENABLED` and `LIGHTGBM_ENABLED`. Configured Upstox/news APIs work without model services.
+
+On Vercel, market/news collection runs within authenticated requests. Continuous WebSocket ingestion, timed reports and unattended paper monitoring require the persistent worker started by `npm start`. See the deployment guide for these boundaries and the real dependency checks. Production rejects demo data and in-memory storage.
+
 The default demo runs without MongoDB, broker access, Python or internet after dependencies have been installed. It uses an ephemeral fixture cache, fictional `DEMO|...` instruments and a fixed **21 October 2026, 09:20:02 IST** clock. Its example opportunity is synthetic, not a market recommendation. Restarting the memory demo resets its data.
 
 ## Quick start
@@ -79,7 +83,7 @@ tests/          Unit, API, replay and real MongoDB integration tests
 3. Set `.env` values: `DATA_MODE=live`, `STORAGE_MODE=mongo`, a valid `MONGODB_URI`, and your authorized `UPSTOX_ANALYTICS_TOKEN`. No trading API key, trading secret, order endpoint or OAuth trading flow is required by this app.
 4. Choose `UPSTOX_UNDERLYING_KEYS`. The default watchlist is Nifty 50 and Nifty Bank. Stock keys can be added. Empty configuration selects a deterministic bounded universe from currently listed F&O underlyings; it is not a claim that the chosen symbols are the most liquid. `MAX_UNDERLYINGS` and `MAX_SUBSCRIPTIONS` bound collection.
 5. Review the simulated cost rates in `.env` against your current applicable costs, then set `COSTS_VERIFIED=true`. Supplied rates are estimates, not verified statutory advice. Unverified costs block live research admission.
-6. Supply a maintained event calendar file via `EVENT_CALENDAR_PATH` (schema below). `REQUIRE_EVENT_CALENDAR=true` blocks live admissions when calendar coverage is missing. This explicit coverage requirement is separate from automatic exchange-session retrieval.
+6. Supply a maintained event calendar file via `EVENT_CALENDAR_PATH`, or the same JSON through `EVENT_CALENDAR_JSON` on Vercel (schema below). `REQUIRE_EVENT_CALENDAR=true` blocks live admissions when calendar coverage is missing. This explicit coverage requirement is separate from automatic exchange-session retrieval.
 7. Run `npm run build` and `npm start`, or `npm run dev` to rebuild/restart after source changes. `npm run demo` explicitly overrides live settings for that process and always uses the memory fixture cache.
 
 No live prices are fetched in demo mode. Live API failures never fall back to synthetic values. Initial historical retrieval can take several minutes and broker entitlement or retention limits may leave baselines unavailable. Start before 08:30 IST and inspect `/api/v1/system/health`.
@@ -165,6 +169,8 @@ Raw ticks stay in memory. Selected derivative observations are persisted once pe
 
 New authenticated routes include `/market/features`, `/market/option-observations`, `/strategies/decisions`, `/news/briefings/latest`, `/research/outcomes`, `/research/quality`, `/models/validation` and `/models/drift`. `/system/health` now reports measured database/index sizes, counts, growth and retention health.
 
-Set optional `GNEWS_API_KEY`, `NEWSAPI_KEY`, `NSE_RSS_URL`, `RBI_RSS_URL`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL` and `FINBERT_SERVICE_URL` only when those services are available. They remain disabled by default. The briefing worker starts before 09:00 IST and records actual availability; outages or late startup cannot guarantee an on-time report. The 09:20 analysis, fifteen-minute reassessment, thirty-minute deep evaluation and five-signal ceiling remain in place.
+Set optional `GNEWS_API_KEY`, `NEWSAPI_KEY`, `NSE_RSS_URL` and `RBI_RSS_URL` for providers you use. News collection remains independent of AI. The four AI flags default to false; model URLs alone never enable inference. Qwen/FinBERT/LightGBM source and configuration remain available for later explicit reactivation. With AI disabled, briefings contain source headlines, permitted source summaries, related instruments, URLs and timestamps.
+
+The persistent briefing worker starts before 09:00 IST and records actual availability; outages or late startup cannot guarantee an on-time report. Its 09:20 analysis, fifteen-minute reassessment, thirty-minute deep evaluation and five-signal ceiling remain in place. Vercel invokes collection/evaluation through requests and does not run these timers. `GET /api/v1/performance` now includes daily completed-paper-trade counts, win rate, fees and net P&L by IST exit date, separate from research outcomes.
 
 See [advanced research, model setup and archive instructions](docs/ADVANCED_RESEARCH.md) for algorithms, retention behavior, Python commands, known data gaps, model validation and verified Parquet export. Minute snapshots cannot prove every intraminute target/stop ordering, so missing evidence remains unavailable.
