@@ -1,5 +1,19 @@
-import express, { type Request, type Response, type NextFunction } from 'express';
-import * as helmet from 'helmet';
+import express, { type NextFunction, type Request, type Response } from 'express';
+import {
+  contentSecurityPolicy,
+  crossOriginOpenerPolicy,
+  crossOriginResourcePolicy,
+  originAgentCluster,
+  referrerPolicy,
+  strictTransportSecurity,
+  xContentTypeOptions,
+  xDnsPrefetchControl,
+  xDownloadOptions,
+  xFrameOptions,
+  xPermittedCrossDomainPolicies,
+  xPoweredBy,
+  xXssProtection,
+} from 'helmet';
 import cors from 'cors';
 import { rateLimit } from 'express-rate-limit';
 import { pinoHttp } from 'pino-http';
@@ -40,7 +54,21 @@ export function createApp(s: Services) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', s.config.TRUST_PROXY_HOPS);
-  app.use(helmet.default());
+  app.use(
+    contentSecurityPolicy(),
+    crossOriginOpenerPolicy(),
+    crossOriginResourcePolicy(),
+    originAgentCluster(),
+    referrerPolicy(),
+    strictTransportSecurity(),
+    xContentTypeOptions(),
+    xDnsPrefetchControl(),
+    xDownloadOptions(),
+    xFrameOptions(),
+    xPermittedCrossDomainPolicies(),
+    xPoweredBy(),
+    xXssProtection(),
+  );
   app.use(cors({ origin: s.config.CORS_ORIGINS, credentials: false }));
   app.use(express.json({ limit: '64kb' }));
   app.use(
