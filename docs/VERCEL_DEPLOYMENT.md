@@ -1,12 +1,12 @@
 # Deploy the backend from GitHub to Vercel
 
-The project is configured for **Vercel Express Functions**, Node.js **24.x**, with all AI execution disabled. Deployment is manual. The existing continuous Node worker remains available through `npm start`; Vercel uses the root `app.ts` export instead.
+The project is configured for **Vercel Express Functions**, Node.js **24.x**, with all AI execution disabled. The instructions below support manual deployment; an authorized CLI can deploy the same configuration. The existing continuous Node worker remains available through `npm start`; Vercel uses the root `app.ts` export instead.
 
 ## Import and configure
 
 1. Commit and push the completed project files to your GitHub repository. Keep `.env`, `.cache`, credentials and generated artifacts out of Git. `vercel.json`, `app.ts`, `src/`, `package.json` and `package-lock.json` must be committed.
 2. In Vercel, choose **Add New → Project → Import** and select that repository. Set the root directory to the folder containing `vercel.json` and `package.json`.
-3. Use the **Express** framework preset and **Node.js 24.x**. The committed configuration sets Install Command to `npm ci` and Build Command to `npm run build`. Leave Output Directory unset/default. No Start Command override is needed: Vercel invokes the exported Express app. Keep Fluid Compute enabled; the configured maximum request duration is 300 seconds.
+3. Use the **Express** framework preset and **Node.js 24.x**. The committed configuration sets Install Command to `npm ci --include=dev` and Build Command to `npm run build`. Including development dependencies supplies TypeScript even when `NODE_ENV=production` is set. Leave Output Directory unset/default. No Start Command override is needed: Vercel invokes the exported Express app. Keep Fluid Compute enabled; the configured maximum request duration is 300 seconds.
 4. Under **Environment Variables**, add the settings below for Production. Use a separate database for Preview if you enable preview deployments. Local `.env` is excluded from deployment, so its values must be entered in Vercel's settings.
 5. Supply a valid MongoDB Atlas/replica-set connection string and database user. Include a dedicated live database name, URL-encode reserved characters in its username/password, and configure network access for the deployment. Do not reuse a database initialized in demo mode.
 6. Deploy. After changing environment variables, redeploy so the new deployment receives them.
@@ -106,7 +106,7 @@ npm run preflight -- 2026-10-23
 
 The read-only preflight writes sanitized results to `artifacts/preflight-2026-10-23.json` and returns a nonzero status when an essential dependency is blocked. It contacts official Upstox market-data endpoints, tests actual protobuf quote decoding, and inspects MongoDB connectivity/indexes without modifying the production database. Worker/API startup creates required indexes once a valid database is configured.
 
-- `BACKEND_UNAVAILABLE` / HTTP 503: check live mode, required authentication variables and `MONGODB_URI`. The previously supplied local URI failed parsing before any network connection, so database connectivity/indexes could not be certified. No secrets or raw connection error are returned to clients.
+- `BACKEND_UNAVAILABLE` / HTTP 503: check live mode, required authentication variables and `MONGODB_URI`. URL-encode reserved characters inside the username/password and specify a dedicated live database. The corrected local URI now passes an authenticated Atlas ping; cloud connectivity/indexes must still be checked after deployment. No secrets or raw connection error are returned to clients.
 - `TOKEN_REJECTED` / broker HTTP 401: replace the Upstox token in Vercel and redeploy.
 - `NO_TRADE` / `INSUFFICIENT_DATA`: inspect rejection reasons and data freshness. These are valid outputs, not invitations to bypass risk checks.
 - Empty news: configure permitted source feeds or another supported provider and check `/system/health`; the configured index news query can return no articles.

@@ -1,8 +1,8 @@
 # Implementation status
 
-Updated **23 October 2026**. Vercel project configuration and an authenticated, request-driven API entry point are complete. All LLM/model execution defaults to **DISABLED**; news and market APIs remain active. Read-only Upstox authentication/history/chain/WebSocket probes passed. The supplied MongoDB URI is invalid, so production persistence and deployment remain blocked. Trading accuracy has not been validated. No real order execution is implemented.
+Updated **23 October 2026**. Vercel project configuration and an authenticated, request-driven API entry point are complete. All LLM/model execution defaults to **DISABLED**; news and market APIs remain active. Read-only Upstox authentication/history/chain/WebSocket probes passed. The local MongoDB URI was corrected and an authenticated Atlas ping now passes. Deployment to the existing `fno-abhi` Vercel project awaits account authorization; cloud persistence is not yet verified. Trading accuracy has not been validated. No real order execution is implemented.
 
-See [manual Vercel deployment](docs/VERCEL_DEPLOYMENT.md) and the [READY/BLOCKED verification report](docs/DEPLOYMENT_REPORT.md). No Vercel deployment was performed; the user will publish the GitHub project manually.
+See [Vercel deployment instructions](docs/VERCEL_DEPLOYMENT.md) and the [READY/BLOCKED verification report](docs/DEPLOYMENT_REPORT.md). No Vercel deployment has been performed yet.
 
 ## Delivered
 
